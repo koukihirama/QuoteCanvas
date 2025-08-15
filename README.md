@@ -120,3 +120,6 @@ QuoteCanvas
 - RSpec
 ### 開発環境
 - docker
+
+## ■ 画面遷移図
+[QuoteCanvas 画面遷移図](https://www.figma.com/design/e7tOfSSZMS2C3kz6nruXWH/QuoteCanvas?node-id=0-1&t=5cCxXIKzIMuxPpcn-1)
