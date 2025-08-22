@@ -123,3 +123,6 @@ QuoteCanvas
 
 ## ■ 画面遷移図
 [QuoteCanvas 画面遷移図](https://www.figma.com/design/e7tOfSSZMS2C3kz6nruXWH/QuoteCanvas?node-id=0-1&t=5cCxXIKzIMuxPpcn-1)
+
+## ■ ER図
+[QuoteCanvas ER図](https://drive.google.com/file/d/1kWL3pJiW5hBhohnM5Gma7iMOYORAPNnY/view?usp=sharing)
