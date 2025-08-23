@@ -1,0 +1,46 @@
+<header class="fixed top-0 left-0 right-0 z-50 bg-base-100 shadow-sm border-b overflow-hidden">
+  <!-- 高さは min-h で安定させる（SP: 64px / PC: 80px）-->
+  <div class="min-h-16 md:min-h-20">
+    <div class="container mx-auto max-w-6xl h-full px-4 md:px-8 flex items-center justify-between gap-3">
+
+      <!-- 左：ブランド -->
+      <%= link_to root_path, class: "btn btn-ghost h-10 min-h-10 px-2 text-xl md:text-2xl font-extrabold leading-none" do %>
+        QuoteCanvas
+      <% end %>
+
+      <!-- 中央：PCナビ -->
+      <nav class="hidden lg:flex">
+        <ul class="menu menu-horizontal px-1 items-center">
+          <li><%= link_to "機能", "#{root_path}#features", class: "px-3 h-10 leading-none hover:underline underline-offset-8" %></li>
+          <li><%= link_to "使い方", "#{root_path}#how", class: "px-3 h-10 leading-none hover:underline underline-offset-8" %></li>
+        </ul>
+      </nav>
+
+      <!-- 右：アクション -->
+      <div class="flex items-center gap-2">
+        <% if user_signed_in? %>
+          <div class="dropdown dropdown-end">
+            <button class="btn btn-ghost h-10 min-h-10 px-3">
+              <span class="hidden md:inline mr-2 truncate max-w-[10rem]">
+                <%= current_user.name.presence || "ユーザー" %>
+              </span>
+              <div class="avatar placeholder">
+                <div class="bg-neutral text-neutral-content rounded-full w-8">
+                  <span><%= (current_user.name.presence || "U")[0].upcase %></span>
+                </div>
+              </div>
+            </button>
+            <ul tabindex="0" class="menu dropdown-content z-[60] p-2 shadow bg-base-100 rounded-box w-56 mt-2">
+              <li><%= link_to "プロフィール設定", edit_user_registration_path %></li>
+              <li><%= button_to "ログアウト", destroy_user_session_path, method: :delete, class: "btn btn-ghost text-left" %></li>
+            </ul>
+          </div>
+        <% else %>
+          <%= link_to "ログイン", new_user_session_path, class: "btn btn-ghost h-10 min-h-10 px-3" %>
+          <%= link_to "はじめる", new_user_registration_path, class: "btn btn-primary h-10 min-h-10 px-4" %>
+        <% end %>
+      </div>
+
+    </div>
+  </div>
+</header>
