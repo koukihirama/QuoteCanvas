@@ -1,0 +1,46 @@
+<div class="min-h-dvh flex items-center bg-base-200">
+  <div class="container max-w-6xl mx-auto px-4 md:px-8">
+    <div class="grid gap-8 lg:grid-cols-2 items-center">
+      <!-- 左：コピー＋ボタン -->
+      <section class="mx-auto max-w-xl">
+        <span class="badge badge-primary mb-3">New</span>
+        <h1 class="text-3xl md:text-4xl lg:text-5xl font-extrabold leading-tight">
+          QuoteCanvas
+        </h1>
+        <p class="mt-3 text-base md:text-lg opacity-80">
+          心に残った一節を、著者・タイトルと一緒に保存。色とフォントをカスタムして、あとで「カード」として味わえる。
+        </p>
+
+        <ul class="mt-5 space-y-2 text-sm md:text-base">
+          <li>・一節記録（本文 / タイトル / 著者）</li>
+          <li>・背景色 / 文字色 / フォントのカスタム</li>
+          <li>・思考ログ（説明のみ・後日実装）</li>
+        </ul>
+
+        <div class="mt-8 grid grid-cols-2 gap-3 max-w-md">
+          <%= link_to "ログイン", new_user_session_path, class: "btn btn-primary" %>
+          <%= link_to "新規登録", new_user_registration_path, class: "btn btn-outline" %>
+        </div>
+      </section>
+
+      <!-- 右：プレビュー（大画面のみ見栄えを強化） -->
+      <aside class="mx-auto max-w-md w-full">
+        <div class="card bg-base-100 shadow-xl">
+          <div class="card-body">
+            <h2 class="card-title">カード表示プレビュー</h2>
+            <p class="opacity-80">
+              「まるで心が呼吸するように、言葉がページから浮かび上がった。」
+            </p>
+            <div class="mt-4 rounded-2xl p-6 border"
+                 style="font-family: serif;">
+              <div class="text-sm opacity-70 mb-1">村上 春樹『海辺のカフカ』</div>
+              <div class="text-xl md:text-2xl font-semibold">
+                僕はただ、ページの向こう側にある世界を信じたかった。
+              </div>
+            </div>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </div>
+</div>

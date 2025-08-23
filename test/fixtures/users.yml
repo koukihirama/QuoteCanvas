@@ -1,0 +1,9 @@
+one:
+  email: user1@example.com
+  encrypted_password: <%= Devise::Encryptor.digest(User, 'password123') %>
+  # Confirmable を有効にしているなら ↓ を追加
+  # confirmed_at: <%= Time.current %>
+
+two:
+  email: user2@example.com
+  encrypted_password: <%= Devise::Encryptor.digest(User, 'password123') %>
