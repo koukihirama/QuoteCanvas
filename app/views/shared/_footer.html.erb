@@ -1,0 +1,26 @@
+<footer class="border-t bg-base-100">
+  <div class="container mx-auto max-w-6xl px-4 md:px-8 py-8 grid gap-6 md:grid-cols-3">
+    <div>
+      <div class="font-bold text-lg">QuoteCanvas</div>
+      <p class="opacity-70 text-sm mt-2">
+        心に刺さった一節を、色とフォントで“自分のカード”に。
+      </p>
+    </div>
+
+    <nav class="grid grid-cols-2 gap-2 text-sm">
+      <%= link_to "トップ", root_path, class: "link link-hover" %>
+      <a class="link link-hover" href="#features">機能</a>
+      <a class="link link-hover" href="#how">使い方</a>
+      <% unless user_signed_in? %>
+        <%= link_to "新規登録", new_user_registration_path, class: "link link-hover" %>
+        <%= link_to "ログイン", new_user_session_path, class: "link link-hover" %>
+      <% end %>
+    </nav>
+
+    <div class="text-sm opacity-60 md:text-right">
+      <% sha = ENV["RENDER_GIT_COMMIT"] || ENV["COMMIT"] %>
+      <div>© <%= Time.current.year %> QuoteCanvas</div>
+      <div>build: <%= sha&.slice(0,7) || "dev" %></div>
+    </div>
+  </div>
+</footer>
