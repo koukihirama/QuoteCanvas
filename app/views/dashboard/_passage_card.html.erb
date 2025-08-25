@@ -1,0 +1,24 @@
+<% bg = (passage.respond_to?(:bg_color) && passage.bg_color.presence) || "#FAF7F0" %>
+<% fg = (passage.respond_to?(:text_color) && passage.text_color.presence) || "#1F2937" %>
+<% ff = (passage.respond_to?(:font_family) && passage.font_family.presence) || "serif" %>
+
+<div class="relative rounded-2xl p-5 border shadow-sm transition hover-float gh-paper"
+     style="background:<%= bg %>; color:<%= fg %>; font-family:<%= ff %>;">
+  <!-- うっすら粒子 -->
+  <div class="absolute inset-0 gh-grain pointer-events-none rounded-2xl"></div>
+
+  <div class="text-[11px] opacity-70 mb-1 relative">
+    <%= [passage.try(:author), passage.try(:title)].compact_blank.join("『") %><%= passage.try(:title).present? ? "』" : "" %>
+  </div>
+
+  <div class="text-base md:text-lg font-semibold leading-relaxed line-clamp-4 relative">
+    <%= passage.try(:body) || "（本文）" %>
+  </div>
+
+  <div class="mt-3 flex items-center justify-between text-xs opacity-70 relative">
+    <span><%= passage.created_at&.in_time_zone&.strftime("%Y-%m-%d") %></span>
+    <% if defined?(passage_path) && passage.respond_to?(:id) %>
+      <%= link_to "詳細", passage_path(passage), class: "link link-hover" %>
+    <% end %>
+  </div>
+</div>

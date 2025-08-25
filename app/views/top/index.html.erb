@@ -1,168 +1,161 @@
-<!-- 背景のデコ（グラデ＋ぼかし） -->
-<div class="pointer-events-none fixed inset-0 -z-10">
-  <div class="absolute -top-24 -left-24 size-72 rounded-full bg-gradient-to-tr from-primary/25 to-secondary/25 blur-3xl"></div>
-  <div class="absolute -bottom-24 -right-24 size-80 rounded-full bg-gradient-to-tr from-accent/20 to-primary/25 blur-3xl"></div>
+<!-- 背景：空＋丘＋粒子 -->
+<div class="fixed inset-0 -z-10 gh-sky">
+  <div class="absolute inset-0 gh-hills opacity-70"></div>
+  <div class="absolute inset-0 gh-grain pointer-events-none"></div>
 </div>
 
 <section class="pt-10 md:pt-12">
-  <!-- Hero -->
   <div class="container mx-auto max-w-7xl px-4 md:px-8">
-    <div class="grid items-center gap-10 lg:grid-cols-2">
-      <div class="max-w-xl mx-auto">
-        <span class="badge badge-primary mb-3">MVP</span>
-        <h1 class="text-4xl md:text-5xl font-extrabold leading-tight">
-          一節が、<span class="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">記憶</span>になる。
-        </h1>
-        <p class="mt-4 text-base md:text-lg opacity-80">
-          読書や日常で心に刺さった一節を、<b>著者・タイトル付き</b>で保存。背景色やフォントを<b>自分好みにカスタム</b>して、カードとしてコレクション。
-        </p>
 
-        <div class="mt-8 flex flex-col sm:flex-row gap-3">
-          <%= link_to "無料ではじめる", new_user_registration_path, class: "btn btn-primary btn-lg" %>
-          <%= link_to "ログイン", new_user_session_path, class: "btn btn-outline btn-lg" %>
+    <!-- Hero -->
+    <div class="rounded-3xl gh-glass p-8 md:p-10 relative overflow-hidden hover-float">
+      <div class="pointer-events-none absolute -top-24 -right-24 size-80 rounded-full bg-gradient-to-tr from-amber-200/40 to-rose-200/40 blur-3xl"></div>
+
+      <div class="grid items-center gap-10 lg:grid-cols-2">
+        <div>
+          <span class="badge badge-primary mb-3">MVP</span>
+          <h1 class="font-serif text-4xl md:text-5xl tracking-tight gh-underline gh-sparkle">
+            一節が、記憶になる。
+          </h1>
+          <p class="mt-4 text-base md:text-lg opacity-85 font-sans">
+            読書や日常で心に刺さった一節を、<b>著者・タイトル</b>と一緒に保存。<br>
+            背景・文字色・フォントを<b>自分らしくカスタム</b>して、“紙カード”としてコレクション。
+          </p>
+
+          <div class="mt-8 flex flex-col sm:flex-row gap-3">
+            <%= link_to "無料ではじめる", new_user_registration_path, class: "btn btn-primary btn-press" %>
+            <%= link_to "ログイン", new_user_session_path, class: "btn btn-outline btn-press underline-grow" %>
+          </div>
+          <p class="mt-3 text-xs opacity-60 font-sans">登録は1分。いつでも削除できます。</p>
         </div>
 
-        <p class="mt-3 text-xs opacity-60">登録は1分。いつでも削除できます。</p>
-      </div>
-
-      <!-- プレビューカード（ガラス風） -->
-      <div class="max-w-lg mx-auto w-full">
-        <div class="rounded-3xl bg-base-100/70 backdrop-blur-xl border shadow-xl">
-          <div class="p-6 md:p-8 space-y-6">
-            <h2 class="font-bold text-xl">カード表示プレビュー</h2>
-
-            <!-- 大カード -->
-            <div class="rounded-2xl p-6 border shadow-sm"
-                 style="background:#FFF5D6; color:#1F2937; font-family: serif;">
-              <div class="text-xs opacity-70 mb-1">夏目 漱石『こころ』</div>
-              <div class="text-xl md:text-2xl font-semibold leading-relaxed">
-                「人間は弱いものだ。弱い自分を知ることから始まる。」
+        <!-- プレビュー（紙カード風） -->
+        <div class="max-w-lg mx-auto w-full">
+          <div class="rounded-3xl gh-glass p-6 md:p-8 relative overflow-hidden elev-2">
+            <div class="grid gap-5">
+              <div class="relative rounded-2xl p-6 border gh-paper card-lift">
+                <div class="absolute inset-0 gh-grain pointer-events-none rounded-2xl"></div>
+                <div class="text-[11px] opacity-70 mb-1 font-sans">夏目 漱石『こころ』</div>
+                <div class="text-xl md:text-2xl font-semibold leading-relaxed font-serif">
+                  「人は弱い。弱さを知るところから、やさしさが始まる。」
+                </div>
               </div>
+
+              <div class="grid grid-cols-2 gap-4">
+                <div class="relative rounded-2xl p-4 border card-lift" style="background:#111827; color:#F9FAFB; font-family: ui-monospace, SFMono-Regular, Menlo, monospace;">
+                  <div class="absolute inset-0 gh-grain pointer-events-none rounded-2xl opacity-40"></div>
+                  <div class="text-[10px] opacity-70 mb-1">Unknown『Daily Notes』</div>
+                  <div class="text-sm font-semibold">Keep the words that keep you.</div>
+                </div>
+                <div class="relative rounded-2xl p-4 border gh-paper card-lift" style="color:#065F46; font-family: var(--font-sans);">
+                  <div class="absolute inset-0 gh-grain pointer-events-none rounded-2xl"></div>
+                  <div class="text-[10px] opacity-70 mb-1">川端 康成『雪国』</div>
+                  <div class="text-sm font-semibold">国境の長いトンネルを抜けると雪国であった。</div>
+                </div>
+              </div>
+
+              <p class="text-xs opacity-60 font-sans">* カードは記録内容に合わせて美しくレイアウトされます</p>
             </div>
-
-            <!-- 小カード2枚 -->
-            <div class="grid grid-cols-2 gap-4">
-              <div class="rounded-xl p-4 border shadow-sm transition-transform duration-300 hover:-translate-y-1"
-                   style="background:#111827; color:#F9FAFB; font-family: monospace;">
-                <div class="text-[10px] opacity-70 mb-1">Unknown『Daily Notes』</div>
-                <div class="text-sm font-semibold">Keep the words that keep you.</div>
-              </div>
-              <div class="rounded-xl p-4 border shadow-sm transition-transform duration-300 hover:-translate-y-1"
-                   style="background:#ECFDF5; color:#065F46; font-family: sans-serif;">
-                <div class="text-[10px] opacity-70 mb-1">川端 康成『雪国』</div>
-                <div class="text-sm font-semibold">国境の長いトンネルを抜けると雪国であった。</div>
-              </div>
-            </div>
-
-            <p class="text-xs opacity-60">* カードは記録内容に合わせて美しくレイアウトされます</p>
           </div>
         </div>
       </div>
     </div>
-  </div>
-</section>
 
-<!-- Features : グラスカード -->
-<section id="features" class="py-20">
-  <div class="container mx-auto max-w-7xl px-4 md:px-8">
-    <h2 class="text-3xl md:text-4xl font-bold text-center">QuoteCanvas の特徴</h2>
-    <p class="text-center opacity-70 mt-2">“使う理由”がひと目でわかる3つ</p>
+    <!-- Features -->
+    <section id="features" class="scroll-mt-24 py-16">
+      <h2 class="text-3xl md:text-4xl font-bold text-center font-serif gh-underline">QuoteCanvas の特徴</h2>
+      <p class="text-center opacity-70 mt-2 font-sans">“使う理由”がひと目でわかる3つ</p>
 
-    <div class="mt-10 grid gap-6 md:grid-cols-3">
-      <%[
-        {icon:"📌", title:"秒速で記録",  body:"本文・著者・タイトルをサクッと保存。忘れないうちに。"},
-        {icon:"🎨", title:"自由にカスタム", body:"背景色・文字色・フォントを好みに。作る楽しさも味わえる。"},
-        {icon:"🗂️", title:"あとで味わう",  body:"カードとしてコレクション化。見返す時間が豊かになる。"}
-      ].each do |f| %>
-        <div class="rounded-2xl bg-base-100/60 backdrop-blur border shadow-sm p-6 transition duration-300 hover:shadow-lg">
-          <div class="text-3xl"><%= f[:icon] %></div>
-          <h3 class="mt-3 font-bold text-xl"><%= f[:title] %></h3>
-          <p class="opacity-80 mt-2 text-sm"><%= f[:body] %></p>
-        </div>
-      <% end %>
-    </div>
-  </div>
-</section>
-
-<!-- Showcase : ギャラリー -->
-<section class="py-20 bg-base-200">
-  <div class="container mx-auto max-w-7xl px-4 md:px-8">
-    <h2 class="text-3xl md:text-4xl font-bold text-center">カード・ギャラリー</h2>
-    <p class="text-center opacity-70 mt-2">色とフォントで“言葉の表情”が変わる</p>
-
-    <div class="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-      <% samples = [
-        {bg:"#FDF2F8", fg:"#4A044E", font:"serif",    meta:"与謝野晶子『みだれ髪』", body:"その手をば柔らかにして我に触れよ"},
-        {bg:"#111827", fg:"#F9FAFB", font:"monospace",meta:"Unknown『Daily Notes』", body:"Write what you don't want to forget."},
-        {bg:"#ECFDF5", fg:"#065F46", font:"sans-serif",meta:"川端 康成『雪国』", body:"国境の長いトンネルを抜けると雪国であった。"},
-        {bg:"#FEF3C7", fg:"#78350F", font:"serif",    meta:"夏目 漱石『草枕』", body:"智に働けば角が立つ。情に棹させば流される。"},
-        {bg:"#DBEAFE", fg:"#1E3A8A", font:"sans-serif",meta:"吉本ばなな『キッチン』", body:"この世で一番好きな場所は台所だ。"},
-        {bg:"#F3F4F6", fg:"#111827", font:"monospace",meta:"Unknown『Work Log』", body:"Small, steady steps compound."}
-      ] %>
-      <% samples.each do |c| %>
-        <div class="rounded-2xl p-6 border shadow-sm hover:shadow-lg transition"
-             style="background:<%= c[:bg] %>; color:<%= c[:fg] %>; font-family:<%= c[:font] %>;">
-          <div class="text-[11px] opacity-70 mb-1"><%= c[:meta] %></div>
-          <div class="text-lg font-semibold leading-relaxed"><%= c[:body] %></div>
-        </div>
-      <% end %>
-    </div>
-  </div>
-</section>
-
-<!-- Use cases : 使いどころ -->
-<section id="how" class="py-20">
-  <div class="container mx-auto max-w-7xl px-4 md:px-8">
-    <h2 class="text-3xl md:text-4xl font-bold text-center">どんなときに？</h2>
-    <p class="text-center opacity-70 mt-2">あなたの毎日に“言葉の居場所”を</p>
-
-    <div class="mt-10 grid gap-6 md:grid-cols-3">
-      <%[
-        {emoji:"📚", title:"読書ノートに", body:"心に残った一文をその場で保存。後でまとめて味わう。"},
-        {emoji:"🧠", title:"学習メモに",  body:"講義や記事のフレーズを抜き出して、知識の核に。"},
-        {emoji:"🌤", title:"日々の気づきに", body:"生活の中の言葉をカード化。いつでも見返せる宝箱。"}
-      ].each do |u| %>
-        <div class="rounded-2xl bg-base-100/70 backdrop-blur p-6 border shadow-sm">
-          <div class="text-3xl"><%= u[:emoji] %></div>
-          <h3 class="mt-3 font-bold text-xl"><%= u[:title] %></h3>
-          <p class="opacity-80 mt-2 text-sm"><%= u[:body] %></p>
-        </div>
-      <% end %>
-    </div>
-  </div>
-</section>
-
-<!-- Future : ロードマップ（期待感） -->
-<section class="py-20 bg-base-200">
-  <div class="container mx-auto max-w-7xl px-4 md:px-8">
-    <h2 class="text-3xl md:text-4xl font-bold text-center">これから</h2>
-    <p class="text-center opacity-70 mt-2">MVP後に予定しているアップデート</p>
-
-    <div class="mt-10 grid gap-6 md:grid-cols-3">
-      <%[
-        {title:"思考ログ", body:"記録した一節にメモや気づきを添えて、後で思考を辿れるように。"},
-        {title:"書籍API連携", body:"著者名・タイトル補完や書影取得で、入力と見栄えをスムーズに。"},
-        {title:"カード共有", body:"作ったカードを画像として共有。SNSやブログに貼り付けやすく。"}
-      ].each do |f| %>
-        <div class="rounded-2xl p-6 border shadow-sm bg-base-100/80">
-          <h3 class="font-bold text-xl"><%= f[:title] %></h3>
-          <p class="opacity-80 mt-2 text-sm"><%= f[:body] %></p>
-        </div>
-      <% end %>
-    </div>
-  </div>
-</section>
-
-<!-- CTA（締め） -->
-<section class="py-20">
-  <div class="container mx-auto max-w-4xl px-4 text-center">
-    <div class="rounded-3xl bg-gradient-to-r from-primary to-secondary text-primary-content p-10 shadow-xl">
-      <h2 class="text-3xl md:text-4xl font-extrabold">さぁ、一節をカードにしよう。</h2>
-      <p class="mt-2 opacity-90">言葉を集める。自分の色で、記憶にする。</p>
-      <div class="mt-6 flex flex-col sm:flex-row gap-3 justify-center">
-        <%= link_to "無料で始める", new_user_registration_path, class: "btn btn-secondary btn-lg" %>
-        <%= link_to "ログイン", new_user_session_path, class: "btn btn-ghost btn-lg" %>
+      <div class="mt-10 grid gap-6 md:grid-cols-3">
+        <%[
+          {icon:"📌", title:"秒速で記録",  body:"本文・著者・タイトルをサクッと保存。忘れないうちに。"},
+          {icon:"🎨", title:"自由にカスタム", body:"背景色・文字色・フォントを好みに。作る楽しさも。"},
+          {icon:"🗂️", title:"あとで味わう",  body:"カードとしてコレクション。見返す時間が豊かに。"}
+        ].each do |f| %>
+          <div class="rounded-2xl gh-glass p-6 hover-float">
+            <div class="text-3xl"><%= f[:icon] %></div>
+            <h3 class="mt-3 font-bold text-xl font-sans"><%= f[:title] %></h3>
+            <p class="opacity-80 mt-2 text-sm font-sans"><%= f[:body] %></p>
+          </div>
+        <% end %>
       </div>
-    </div>
+    </section>
+
+    <!-- Gallery -->
+    <section class="py-16">
+      <h2 class="text-3xl md:text-4xl font-bold text-center font-serif gh-underline">カード・ギャラリー</h2>
+      <p class="text-center opacity-70 mt-2 font-sans">色とフォントで“言葉の表情”が変わる</p>
+
+      <div class="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <% samples = [
+          {bg:"#FDF2F8", fg:"#4A044E", font:"var(--font-serif)",    meta:"与謝野晶子『みだれ髪』", body:"その手をば柔らかにして我に触れよ"},
+          {bg:"#111827", fg:"#F9FAFB", font:"ui-monospace,SFMono-Regular,Menlo,monospace", meta:"Unknown『Daily Notes』", body:"Write what you don't want to forget."},
+          {bg:"#ECFDF5", fg:"#065F46", font:"var(--font-sans)",      meta:"川端 康成『雪国』", body:"国境の長いトンネルを抜けると雪国であった。"},
+          {bg:"#FEF3C7", fg:"#78350F", font:"var(--font-serif)",    meta:"夏目 漱石『草枕』", body:"智に働けば角が立つ。情に棹させば流される。"},
+          {bg:"#DBEAFE", fg:"#1E3A8A", font:"var(--font-sans)",      meta:"吉本ばなな『キッチン』", body:"この世で一番好きな場所は台所だ。"},
+          {bg:"#F3F4F6", fg:"#111827", font:"ui-monospace,SFMono-Regular,Menlo,monospace", meta:"Unknown『Work Log』", body:"Small, steady steps compound."}
+        ] %>
+        <% samples.each do |c| %>
+          <div class="relative rounded-2xl p-6 border card-lift"
+               style="background:<%= c[:bg] %>; color:<%= c[:fg] %>; font-family:<%= c[:font] %>;">
+            <div class="absolute inset-0 gh-grain pointer-events-none rounded-2xl"></div>
+            <div class="text-[11px] opacity-70 mb-1 font-sans"><%= c[:meta] %></div>
+            <div class="text-lg font-semibold leading-relaxed"><%= c[:body] %></div>
+          </div>
+        <% end %>
+      </div>
+    </section>
+
+    <!-- How / Use cases -->
+    <section id="how" class="scroll-mt-24 py-16">
+      <h2 class="text-3xl md:text-4xl font-bold text-center font-serif gh-underline">どんなときに？</h2>
+      <p class="text-center opacity-70 mt-2 font-sans">あなたの毎日に“言葉の居場所”を</p>
+
+      <div class="mt-10 grid gap-6 md:grid-cols-3">
+        <%[
+          {emoji:"📚", title:"読書ノートに", body:"心に残った一文をその場で保存。後でまとめて味わう。"},
+          {emoji:"🧠", title:"学習メモに",  body:"講義や記事のフレーズを抜き出して、知識の核に。"},
+          {emoji:"🌤", title:"日々の気づきに", body:"生活の中の言葉をカード化。いつでも見返せる宝箱。"}
+        ].each do |u| %>
+          <div class="rounded-2xl gh-glass p-6 hover-float">
+            <div class="text-3xl"><%= u[:emoji] %></div>
+            <h3 class="mt-3 font-bold text-xl font-sans"><%= u[:title] %></h3>
+            <p class="opacity-80 mt-2 text-sm font-sans"><%= u[:body] %></p>
+          </div>
+        <% end %>
+      </div>
+    </section>
+
+    <!-- Roadmap -->
+    <section class="py-16">
+      <h2 class="text-3xl md:text-4xl font-bold text-center font-serif gh-underline">これから</h2>
+      <p class="text-center opacity-70 mt-2 font-sans">MVP後に予定しているアップデート</p>
+
+      <div class="mt-10 grid gap-6 md:grid-cols-3">
+        <%[
+          {title:"思考ログ", body:"記録した一節にメモや気づきを添えて、後で思考を辿れるように。"},
+          {title:"書籍API連携", body:"著者名・タイトル補完や書影取得で、入力と見栄えをスムーズに。"},
+          {title:"カード共有", body:"作ったカードを画像として共有。SNSやブログに貼り付けやすく。"}
+        ].each do |f| %>
+          <div class="rounded-2xl gh-glass p-6 hover-float">
+            <h3 class="font-bold text-xl font-sans"><%= f[:title] %></h3>
+            <p class="opacity-80 mt-2 text-sm font-sans"><%= f[:body] %></p>
+          </div>
+        <% end %>
+      </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="py-16">
+      <div class="rounded-3xl bg-gradient-to-r from-primary to-secondary text-primary-content p-10 text-center shadow-xl hover-float">
+        <h2 class="font-serif text-3xl md:text-4xl font-extrabold tracking-tight">さぁ、一節をカードにしよう。</h2>
+        <p class="mt-2 opacity-90 font-sans">言葉を集める。自分の色で、記憶にする。</p>
+        <div class="mt-6 flex flex-col sm:flex-row gap-3 justify-center">
+          <%= link_to "無料で始める", new_user_registration_path, class: "btn btn-secondary btn-press" %>
+          <%= link_to "ログイン", new_user_session_path, class: "btn btn-ghost btn-press underline-grow" %>
+        </div>
+      </div>
+    </section>
+
   </div>
 </section>
