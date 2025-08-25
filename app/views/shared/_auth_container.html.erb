@@ -1,0 +1,11 @@
+<!-- 背景：空＋丘＋粒子（authページ専用） -->
+<div class="fixed inset-0 -z-10 gh-sky">
+  <div class="absolute inset-0 gh-hills opacity-70"></div>
+  <div class="absolute inset-0 gh-grain pointer-events-none"></div>
+</div>
+
+<div class="min-h-[70vh] flex items-center justify-center px-4">
+  <div class="w-full max-w-md rounded-3xl gh-glass p-7 md:p-9 elev-2">
+    <%= yield %>
+  </div>
+</div>

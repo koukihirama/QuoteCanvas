@@ -2,12 +2,106 @@
 @tailwind components;
 @tailwind utilities;
 
-/*
-
-@layer components {
-  .btn-primary {
-    @apply py-2 px-4 bg-blue-200;
+/* ---------- Base（フォント） ---------- */
+@layer base {
+  :root {
+    --font-sans: "Inter", "Noto Sans JP", system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji", sans-serif;
+    --font-serif: "Shippori Mincho", "Hiragino Mincho ProN", "Hiragino Mincho Pro", YuMincho, "Yu Mincho", Georgia, serif;
   }
+  .font-sans { font-family: var(--font-sans); }
+  .font-serif { font-family: var(--font-serif); }
 }
 
-*/
+/* ---------- Utilities（質感・装飾） ---------- */
+@layer utilities {
+  /* 空のグラデ（上：空色 → 下：生成り） */
+  .gh-sky {
+    background: radial-gradient(80% 60% at 50% 0%, #dff2ff 0%, #f6fbff 60%, #fbf7ef 100%);
+  }
+
+  /* 粒子ノイズ（軽量・画像不要） */
+  .gh-grain {
+    background-image:
+      radial-gradient(circle at 20% 20%, rgba(0,0,0,.04) 0 1px, transparent 1px 100%),
+      radial-gradient(circle at 80% 10%, rgba(0,0,0,.03) 0 1px, transparent 1px 100%);
+    background-size: 10px 10px, 8px 8px;
+    mix-blend-mode: multiply;
+    opacity: .6;
+  }
+
+  /* 生成りの紙 */
+  .gh-paper {
+    background: linear-gradient(#faf7f0, #f5efe2);
+  }
+
+  /* ガラスカード（@apply不使用：エディタ警告回避 & フォールバック） */
+  .gh-glass {
+    /* フォールバック（backdrop-filter非対応環境向け） */
+    background-color: rgba(255,255,255,0.7);
+    border: 1px solid rgba(17,24,39,0.08);
+    box-shadow:
+      0 10px 30px rgba(17,24,39,0.08),
+      inset 0 1px 0 rgba(255,255,255,0.35);
+  }
+  @supports ((-webkit-backdrop-filter: blur(18px)) or (backdrop-filter: blur(18px))) {
+    .gh-glass {
+      -webkit-backdrop-filter: blur(18px);
+      backdrop-filter: blur(18px);
+    }
+  }
+
+  /* 丘のシルエット（CSSのみ） */
+  .gh-hills {
+    --c1: #cfe8d3; --c2: #a9d0b1; --c3: #86b594;
+    background:
+      radial-gradient(60% 40% at 10% 100%, var(--c1) 0 60%, transparent 61%) bottom left/60% 50% no-repeat,
+      radial-gradient(50% 35% at 50% 100%, var(--c2) 0 60%, transparent 61%) bottom center/70% 55% no-repeat,
+      radial-gradient(55% 45% at 90% 100%, var(--c3) 0 60%, transparent 61%) bottom right/60% 50% no-repeat;
+  }
+
+  /* 手描き風の下線 */
+  .gh-underline { position: relative; }
+  .gh-underline::after{
+    content:"";
+    position:absolute; left:0; bottom:-.4rem;
+    height:.3rem; width:6rem;
+    background: linear-gradient(90deg,#d4a373,#ffd082);
+    border-radius: 9999px;
+    opacity:.7;
+    filter: blur(.2px);
+  }
+
+  /* きらめき（控えめアニメ） */
+  .gh-sparkle { position: relative; }
+  .gh-sparkle::after{
+    content:"✦";
+    position:absolute; right:-.8rem; top:-.8rem;
+    font-size:1rem; opacity:.7;
+    animation: sparkle 2.4s ease-in-out infinite;
+  }
+  @keyframes sparkle {
+    0%,100%{ transform: scale(0.8) rotate(0deg); opacity:0; }
+    20%{ transform: scale(1) rotate(12deg); opacity:.9; }
+    60%{ transform: scale(.9) rotate(-8deg); opacity:.5; }
+  }
+
+  /* ふわっと浮く */
+  .hover-float {
+    transition: transform .35s ease, box-shadow .35s ease;
+  }
+  .hover-float:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 24px rgba(0,0,0,.12);
+  }
+
+  /* やさしい風（小さく上下ゆれ） */
+  @keyframes breeze { 0%,100%{ transform: translateY(0) } 50%{ transform: translateY(-3px) } }
+  .breeze { animation: breeze 5s ease-in-out infinite; }
+
+  /* 動きを控えたいユーザー設定に配慮 */
+  @media (prefers-reduced-motion: reduce) {
+    .gh-sparkle::after,
+    .breeze,
+    .hover-float { animation: none !important; transition: none !important; }
+  }
+}

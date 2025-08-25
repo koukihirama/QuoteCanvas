@@ -1,4 +1,104 @@
-<div class="max-w-3xl mx-auto mt-20 text-center">
-  <h1 class="text-3xl font-bold mb-4">ダッシュボード</h1>
-  <p class="opacity-70">ここから記録した一節やプロフィールにアクセスできます。</p>
+<!-- 背景：空＋丘＋粒子 -->
+<div class="fixed inset-0 -z-10 gh-sky">
+  <div class="absolute inset-0 gh-hills opacity-70"></div>
+  <div class="absolute inset-0 gh-grain pointer-events-none"></div>
+</div>
+
+<div class="container mx-auto max-w-7xl px-4 md:px-8">
+  <!-- Hero：やわらかい歓迎とクイックアクション -->
+  <section class="mt-2 md:mt-4">
+    <div class="rounded-3xl gh-glass p-6 md:p-8 relative overflow-hidden hover-float">
+      <!-- 光のにじみ -->
+      <div class="pointer-events-none absolute -top-24 -right-24 size-80 rounded-full bg-gradient-to-tr from-amber-200/40 to-rose-200/40 blur-3xl"></div>
+
+      <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 relative">
+        <div>
+          <h1 class="text-2xl md:text-3xl font-extrabold gh-underline gh-sparkle">
+            こんにちは、<%= current_user.name.presence || "読者" %> さん
+          </h1>
+          <p class="mt-2 opacity-80">
+            風のようにすっと書き留めて、森の本棚にそっと並べよう。
+          </p>
+        </div>
+        <div class="flex flex-wrap gap-2 shrink-0">
+          <%= link_to (defined?(new_passage_path) ? new_passage_path : "#"), class: "btn btn-primary breeze" do %>
+            ＋ 一節を記録
+          <% end %>
+          <%= link_to (defined?(passages_path) ? passages_path : "#"), class: "btn btn-outline hover-float" do %>
+            一覧を見る
+          <% end %>
+          <%= link_to edit_user_registration_path, class: "btn btn-ghost hover-float" do %>
+            プロフィール
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- サマリ：小さな“本のカード” -->
+  <section class="mt-6 grid gap-4 sm:grid-cols-3">
+    <div class="rounded-2xl gh-glass p-5 relative hover-float">
+      <div class="text-sm opacity-70">あなたのカード</div>
+      <div class="text-3xl font-extrabold mt-1"><%= @passages_count %></div>
+    </div>
+    <a href="<%= root_path %>#features" class="rounded-2xl gh-glass p-5 hover-float">
+      <div class="text-sm opacity-70">カスタマイズ</div>
+      <div class="mt-1">色・フォントで“言葉の表情”を変える</div>
+    </a>
+    <%= link_to edit_user_registration_path, class: "rounded-2xl gh-glass p-5 hover-float" do %>
+      <div class="text-sm opacity-70">プロフィール</div>
+      <div class="mt-1 truncate"><%= current_user.email %></div>
+    <% end %>
+  </section>
+
+  <!-- 最近の一節：カード棚（3列） -->
+  <section class="mt-10">
+    <div class="flex items-end justify-between">
+      <div>
+        <h2 class="text-xl md:text-2xl font-bold gh-underline">最近の記録</h2>
+        <p class="opacity-70 text-sm mt-1">直近3枚のカードをピックアップ</p>
+      </div>
+      <%= link_to (defined?(passages_path) ? passages_path : "#"), class: "link link-primary" do %>
+        すべて見る →
+      <% end %>
+    </div>
+
+    <% if @recent_passages.any? %>
+      <div class="mt-5 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        <% @recent_passages.each do |p| %>
+          <%= render "dashboard/passage_card", passage: p %>
+        <% end %>
+      </div>
+    <% else %>
+      <div class="mt-6 rounded-3xl gh-glass p-10 text-center hover-float">
+        <div class="text-4xl mb-2">🌿</div>
+        <p class="font-semibold">まだカードがありません</p>
+        <p class="opacity-70 text-sm mt-1">心に残った一文を、最初の1枚に。</p>
+        <div class="mt-4">
+          <%= link_to (defined?(new_passage_path) ? new_passage_path : "#"), class: "btn btn-primary breeze" do %>
+            ＋ 一節を記録
+          <% end %>
+        </div>
+      </div>
+    <% end %>
+  </section>
+
+  <!-- ショートガイド：森の黒板っぽく -->
+  <section class="mt-10 grid gap-4 md:grid-cols-3">
+    <div class="rounded-2xl gh-glass p-6 hover-float">
+      <div class="text-2xl">✍️</div>
+      <div class="font-bold mt-2">書き留める</div>
+      <p class="opacity-75 text-sm mt-1">本文・著者・タイトルをサッと入力</p>
+    </div>
+    <div class="rounded-2xl gh-glass p-6 hover-float">
+      <div class="text-2xl">🎨</div>
+      <div class="font-bold mt-2">彩る</div>
+      <p class="opacity-75 text-sm mt-1">背景・文字色・フォントで個性を</p>
+    </div>
+    <div class="rounded-2xl gh-glass p-6 hover-float">
+      <div class="text-2xl">🗂️</div>
+      <div class="font-bold mt-2">並べる</div>
+      <p class="opacity-75 text-sm mt-1">あとで眺めて、また好きになる</p>
+    </div>
+  </section>
 </div>
