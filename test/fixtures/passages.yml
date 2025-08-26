@@ -1,9 +1,15 @@
-# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
-
 one:
-  content: MyText
-  author_name: MyString
+  body: "テストの一節A"
+  title: "タイトルA"
+  author: "著者A"
+  bg_color: "#FAF7F0"
+  text_color: "#111827"
+  font_family: "serif"
 
 two:
-  content: MyText
-  author_name: MyString
+  body: "テストの一節B"
+  title: "タイトルB"
+  author: "著者B"
+  bg_color: "#ECFDF5"
+  text_color: "#065F46"
+  font_family: "var(--font-sans)"
