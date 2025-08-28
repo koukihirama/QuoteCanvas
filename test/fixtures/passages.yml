@@ -1,15 +1,11 @@
 one:
-  body: "テストの一節A"
-  title: "タイトルA"
-  author: "著者A"
-  bg_color: "#FAF7F0"
-  text_color: "#111827"
-  font_family: "serif"
+  content: "fixtureで登録したテストの一節"
+  title: "テストタイトル"
+  author: "テスト著者"
+  user: one
 
 two:
-  body: "テストの一節B"
-  title: "タイトルB"
-  author: "著者B"
-  bg_color: "#ECFDF5"
-  text_color: "#065F46"
-  font_family: "var(--font-sans)"
+  content: "もう一つの一節"
+  title: "別のタイトル"
+  author: "誰か"
+  user: one
