@@ -1,0 +1,67 @@
+<!-- 背景：空＋丘＋粒子（トップ同様） -->
+<div class="fixed inset-0 -z-10 gh-sky">
+  <div class="absolute inset-0 gh-hills opacity-70"></div>
+  <div class="absolute inset-0 gh-grain pointer-events-none"></div>
+</div>
+
+<div class="container mx-auto max-w-7xl px-4 md:px-8 py-8 md:py-12">
+  <div class="mb-6">
+    <%= link_to "← 戻る", (request.referer || root_path), class: "link link-primary" %>
+  </div>
+
+  <div class="rounded-3xl gh-glass p-6 md:p-8 relative overflow-hidden">
+    <div class="pointer-events-none absolute -top-24 -right-24 size-80 rounded-full bg-gradient-to-tr from-amber-200/40 to-rose-200/40 blur-3xl"></div>
+
+    <div class="grid gap-6 md:grid-cols-2 items-start">
+      <!-- カード本体 -->
+      <div class="relative rounded-2xl p-6 border card-lift"
+           style="background:<%= @passage.bg_color.presence || '#F9FAFB' %>;
+                  color:<%= @passage.text_color.presence || '#111827' %>;
+                  font-family:<%= @passage.font_family.presence || 'var(--font-serif)' %>;">
+        <div class="absolute inset-0 gh-grain pointer-events-none rounded-2xl"></div>
+
+        <% if @passage.title.present? || @passage.author.present? %>
+          <div class="text-[11px] opacity-70 mb-1 font-sans">
+            <%= [@passage.author, @passage.title.presence&.yield_self { |t| "『#{t}』" }].compact.join(" ") %>
+          </div>
+        <% end %>
+
+        <div class="text-lg md:text-2xl font-semibold leading-relaxed">
+          <%= simple_format(h(@passage.content)) %>
+        </div>
+      </div>
+
+      <!-- メタ情報 -->
+      <div class="space-y-4">
+        <h1 class="text-2xl md:text-3xl font-bold gh-underline">一節の詳細</h1>
+
+        <div class="rounded-2xl gh-glass p-5">
+          <dl class="grid grid-cols-3 gap-3 text-sm">
+            <dt class="opacity-70">著者</dt>
+            <dd class="col-span-2"><%= @passage.author.presence || "-" %></dd>
+
+            <dt class="opacity-70">タイトル</dt>
+            <dd class="col-span-2"><%= @passage.title.presence || "-" %></dd>
+
+            <dt class="opacity-70">作成</dt>
+            <dd class="col-span-2"><%= l @passage.created_at, format: :long %></dd>
+
+            <dt class="opacity-70">背景色</dt>
+            <dd class="col-span-2"><code><%= @passage.bg_color.presence || "-" %></code></dd>
+
+            <dt class="opacity-70">文字色</dt>
+            <dd class="col-span-2"><code><%= @passage.text_color.presence || "-" %></code></dd>
+
+            <dt class="opacity-70">フォント</dt>
+            <dd class="col-span-2"><code><%= @passage.font_family.presence || "-" %></code></dd>
+          </dl>
+        </div>
+
+        <div class="flex flex-wrap gap-2">
+          <%= link_to "編集", "#", class: "btn btn-outline btn-press", disabled: true %>
+          <%= link_to "新しく記録", new_passage_path, class: "btn btn-primary btn-press" %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
