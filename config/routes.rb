@@ -7,5 +7,5 @@ Rails.application.routes.draw do
   get "manifest" => "rails/pwa#manifest", as: :pwa_manifest
   get "dashboard", to: "dashboard#index"
   root "top#index"  # トップページ
-  resources :passages, only: [ :new, :create ]
+  resources :passages, only: [ :new, :create, :show ]
 end
