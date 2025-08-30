@@ -1,0 +1,83 @@
+<%= form_with model: passage, local: true, class: "space-y-5" do |f| %>
+  <% if passage.errors.any? %>
+    <div class="alert alert-error">
+      <span>入力にエラーがあるよ（<%= passage.errors.count %>件）</span>
+      <ul class="list-disc pl-5">
+        <% passage.errors.full_messages.each do |m| %>
+          <li><%= m %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div>
+    <%= f.label :content, "一節本文", class: "block font-semibold mb-1" %>
+    <%= f.text_area :content, rows: 5,
+          class: "textarea textarea-bordered w-full",
+          data: { preview_target: "content" } %>
+  </div>
+
+  <div class="grid gap-4 md:grid-cols-2">
+    <div>
+      <%= f.label :title, "作品タイトル", class: "block font-semibold mb-1" %>
+      <%= f.text_field :title,
+            class: "input input-bordered w-full",
+            data: { preview_target: "title" } %>
+    </div>
+    <div>
+      <%= f.label :author, "著者", class: "block font-semibold mb-1" %>
+      <%= f.text_field :author,
+            class: "input input-bordered w-full",
+            data: { preview_target: "author" } %>
+    </div>
+  </div>
+
+  <!-- カスタマイズはあとで本実装。今はテキストで置いておく -->
+  <details class="collapse collapse-arrow bg-base-200">
+    <summary class="collapse-title font-semibold">見た目のカスタマイズ（仮）</summary>
+    <div class="collapse-content grid gap-4 md:grid-cols-3">
+      <div>
+        <%= f.label :bg_color, "背景色 (例: #F9FAFB)", class: "block font-semibold mb-1" %>
+        <%= f.text_field :bg_color,
+              class: "input input-bordered w-full",
+              data: { preview_target: "bgColor" } %>
+      </div>
+      <div>
+        <%= f.label :text_color, "文字色 (例: #111827)", class: "block font-semibold mb-1" %>
+        <%= f.text_field :text_color,
+              class: "input input-bordered w-full",
+              data: { preview_target: "textColor" } %>
+      </div>
+      <div>
+        <%= f.label :font_family, "フォント (例: var(--font-serif))", class: "block font-semibold mb-1" %>
+        <%= f.text_field :font_family,
+              class: "input input-bordered w-full",
+              data: { preview_target: "fontFamily" } %>
+      </div>
+    </div>
+  </details>
+
+  <!-- ▼ ここが追加：依存ゼロのリアルタイムプレビュー -->
+  <div class="mt-8">
+    <div class="flex items-center justify-between mb-2">
+      <h2 class="text-xl font-bold gh-underline">プレビュー</h2>
+      <span class="text-sm opacity-70">入力に合わせて自動更新（遅延 200ms）</span>
+    </div>
+
+    <div id="preview-card" class="relative rounded-2xl p-6 border gh-glass"
+         style="background:<%= passage.bg_color.presence || '#F9FAFB' %>;
+                color:<%= passage.text_color.presence || '#111827' %>;
+                font-family:<%= passage.font_family.presence || 'var(--font-serif)' %>;">
+      <div class="absolute inset-0 gh-grain pointer-events-none rounded-2xl"></div>
+
+      <div id="preview-meta" class="text-[11px] opacity-70 mb-1 font-sans"></div>
+      <div id="preview-content" class="text-lg md:text-2xl font-semibold leading-relaxed whitespace-pre-wrap"></div>
+    </div>
+  </div>
+  <!-- ▲ 追加ここまで -->
+
+  <div class="flex gap-2">
+    <%= f.submit (passage.persisted? ? "更新する" : "保存する"), class: "btn btn-primary" %>
+    <%= link_to "キャンセル", (passage.persisted? ? passage_path(passage) : dashboard_path), class: "btn btn-ghost" %>
+  </div>
+<% end %>
