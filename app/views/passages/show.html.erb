@@ -58,9 +58,11 @@
         </div>
 
         <div class="flex flex-wrap gap-2">
-          <%= link_to "編集", "#", class: "btn btn-outline btn-press", disabled: true %>
-          <%= link_to "新しく記録", new_passage_path, class: "btn btn-primary btn-press" %>
-        </div>
+  <% if user_signed_in? && @passage.user_id == current_user.id %>
+    <%= link_to "編集", edit_passage_path(@passage), class: "btn btn-outline btn-press" %>
+  <% end %>
+  <%= link_to "新しく記録", new_passage_path, class: "btn btn-primary btn-press" %>
+</div>
       </div>
     </div>
   </div>
