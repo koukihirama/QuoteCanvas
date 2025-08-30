@@ -1,7 +1,7 @@
 class PassagesController < ApplicationController
   before_action :authenticate_user!
-  before_action :set_passage,   only: [:show, :edit, :update, :destroy]   # ← destroy追加
-  before_action :ensure_owner!, only: [:edit, :update, :destroy]          # ← destroy追加
+  before_action :set_passage,   only: [ :show, :edit, :update, :destroy ]   # ← destroy追加
+  before_action :ensure_owner!, only: [ :edit, :update, :destroy ]          # ← destroy追加
 
   def new
     @passage = current_user.passages.new
