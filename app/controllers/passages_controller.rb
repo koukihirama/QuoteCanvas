@@ -1,7 +1,7 @@
 class PassagesController < ApplicationController
   before_action :authenticate_user!
-  before_action :set_passage, only: [ :show, :edit, :update ]
-  before_action :ensure_owner!, only: [ :edit, :update ]
+  before_action :set_passage,   only: [:show, :edit, :update, :destroy]   # ← destroy追加
+  before_action :ensure_owner!, only: [:edit, :update, :destroy]          # ← destroy追加
 
   def new
     @passage = current_user.passages.new
@@ -17,11 +17,8 @@ class PassagesController < ApplicationController
     end
   end
 
-  def show
-  end
-
-  def edit
-  end
+  def show; end
+  def edit; end
 
   def update
     if @passage.update(passage_params)
@@ -32,14 +29,26 @@ class PassagesController < ApplicationController
     end
   end
 
+  def destroy
+    if @passage.destroy
+      redirect_to dashboard_path, notice: "カードを削除しました。"
+    else
+      redirect_to @passage, alert: "削除に失敗しちゃった…もう一度試してね。"
+    end
+  end
+
   private
 
   def set_passage
-    @passage = Passage.find(params[:id])
+    @passage = Passage.find_by(id: params[:id])
+    unless @passage
+      redirect_to dashboard_path, alert: "カードが見つからないよ。" and return
+    end
   end
 
   def ensure_owner!
-    redirect_to @passage, alert: "これはあなたのカードじゃないみたい…" unless @passage.user_id == current_user.id
+    return if @passage.user_id == current_user.id
+    redirect_to @passage, alert: "これはあなたのカードじゃないみたい…" and return
   end
 
   def passage_params
