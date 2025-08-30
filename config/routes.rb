@@ -6,6 +6,7 @@ Rails.application.routes.draw do
   get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker
   get "manifest" => "rails/pwa#manifest", as: :pwa_manifest
   get "dashboard", to: "dashboard#index"
-  root "top#index"  # トップページ
+  root "top#index"
+  get "profile", to: "users#show", as: :profile
   resources :passages, only: [ :new, :create, :show, :edit, :update, :destroy ]
 end
