@@ -1,7 +1,7 @@
 class PassagesController < ApplicationController
   before_action :authenticate_user!
-  before_action :set_passage, only: [:show, :edit, :update]
-  before_action :ensure_owner!, only: [:edit, :update]
+  before_action :set_passage, only: [ :show, :edit, :update ]
+  before_action :ensure_owner!, only: [ :edit, :update ]
 
   def new
     @passage = current_user.passages.new
