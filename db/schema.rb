@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_08_28_051618) do
+ActiveRecord::Schema[7.2].define(version: 2025_08_31_072511) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -25,6 +25,14 @@ ActiveRecord::Schema[7.2].define(version: 2025_08_28_051618) do
     t.bigint "user_id"
     t.text "content"
     t.index ["user_id"], name: "index_passages_on_user_id"
+  end
+
+  create_table "thought_logs", force: :cascade do |t|
+    t.text "content"
+    t.bigint "passage_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["passage_id"], name: "index_thought_logs_on_passage_id"
   end
 
   create_table "users", force: :cascade do |t|
@@ -46,4 +54,5 @@ ActiveRecord::Schema[7.2].define(version: 2025_08_28_051618) do
   end
 
   add_foreign_key "passages", "users"
+  add_foreign_key "thought_logs", "passages"
 end
