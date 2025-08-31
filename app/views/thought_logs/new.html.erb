@@ -1,0 +1,41 @@
+<div class="fixed inset-0 -z-10 gh-sky">
+  <div class="absolute inset-0 gh-hills opacity-70"></div>
+  <div class="absolute inset-0 gh-grain pointer-events-none"></div>
+</div>
+
+<div class="container mx-auto max-w-3xl px-4 md:px-8 py-8 md:py-12">
+  <div class="mb-6">
+    <%= link_to "← 戻る", passage_path(@passage), class: "link link-primary" %>
+  </div>
+
+  <div class="rounded-3xl gh-glass p-6 md:p-8 relative overflow-hidden">
+    <div class="pointer-events-none absolute -top-24 -right-24 size-80 rounded-full
+                bg-gradient-to-tr from-amber-200/40 to-rose-200/40 blur-3xl"></div>
+
+    <h1 class="text-2xl md:text-3xl font-extrabold gh-underline mb-6">思考ログを追加</h1>
+
+    <%= form_with model: [@passage, @thought_log], local: true, class: "space-y-5" do |f| %>
+      <% if @thought_log.errors.any? %>
+        <div class="alert alert-error">
+          <span>入力にエラーがあるよ（<%= @thought_log.errors.count %>件）</span>
+          <ul class="list-disc pl-5">
+            <% @thought_log.errors.full_messages.each do |m| %>
+              <li><%= m %></li>
+            <% end %>
+          </ul>
+        </div>
+      <% end %>
+
+      <!-- 思考ログ本文 -->
+      <div>
+        <%= f.label :content, "思考ログ", class: "block font-semibold mb-1" %>
+        <%= f.text_area :content, rows: 5, class: "textarea textarea-bordered w-full" %>
+      </div>
+
+      <div class="flex gap-2">
+        <%= f.submit "保存する", class: "btn btn-primary" %>
+        <%= link_to "キャンセル", passage_path(@passage), class: "btn btn-ghost" %>
+      </div>
+    <% end %>
+  </div>
+</div>
