@@ -1,5 +1,6 @@
 class Passage < ApplicationRecord
   belongs_to :user, optional: true  # 後で必須化してOK
+   has_many :thought_logs, dependent: :destroy
 
   validates :content, presence: true, length: { maximum: 2000 }
   validates :title, length: { maximum: 200 }, allow_blank: true
