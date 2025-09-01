@@ -17,7 +17,10 @@ class PassagesController < ApplicationController
     end
   end
 
-  def show; end
+  def show
+    @thought_logs = @passage.thought_logs.order(created_at: :desc)
+  end
+
   def edit; end
 
   def update
