@@ -1,4 +1,4 @@
-<!-- 背景：空＋丘＋粒子（トップ同様） -->
+<!-- 背景：空＋丘＋粒子 -->
 <div class="fixed inset-0 -z-10 gh-sky">
   <div class="absolute inset-0 gh-hills opacity-70"></div>
   <div class="absolute inset-0 gh-grain pointer-events-none"></div>
@@ -15,9 +15,9 @@
     <div class="grid gap-6 md:grid-cols-2 items-start">
       <!-- カード本体 -->
       <div class="relative rounded-2xl p-6 border card-lift"
-           style="background:<%= @passage.bg_color.presence || '#F9FAFB' %>;
-                  color:<%= @passage.text_color.presence || '#111827' %>;
-                  font-family:<%= @passage.font_family.presence || 'var(--font-serif)' %>;">
+           style="background:<%= @style[:bg] %>;
+                  color:<%= @style[:text] %>;
+                  font-family:<%= @style[:font] %>;">
         <div class="absolute inset-0 gh-grain pointer-events-none rounded-2xl"></div>
 
         <% if @passage.title.present? || @passage.author.present? %>
@@ -47,68 +47,83 @@
             <dd class="col-span-2"><%= l @passage.created_at, format: :long %></dd>
 
             <dt class="opacity-70">背景色</dt>
-            <dd class="col-span-2"><code><%= @passage.bg_color.presence || "-" %></code></dd>
+            <dd class="col-span-2">
+              <code><%= @style[:bg] %></code>
+              <% if @passage.customization&.bg_color.present? %>
+                <span class="badge badge-ghost ml-2">custom</span>
+              <% end %>
+            </dd>
 
             <dt class="opacity-70">文字色</dt>
-            <dd class="col-span-2"><code><%= @passage.text_color.presence || "-" %></code></dd>
+            <dd class="col-span-2">
+              <code><%= @style[:text] %></code>
+              <% if @passage.customization&.color.present? %>
+                <span class="badge badge-ghost ml-2">custom</span>
+              <% end %>
+            </dd>
 
             <dt class="opacity-70">フォント</dt>
-            <dd class="col-span-2"><code><%= @passage.font_family.presence || "-" %></code></dd>
+            <dd class="col-span-2">
+              <code><%= @style[:font] %></code>
+              <% if @passage.customization&.font.present? %>
+                <span class="badge badge-ghost ml-2">custom</span>
+              <% end %>
+            </dd>
           </dl>
         </div>
 
         <!-- 思考ログ：この一節に紐づく“考えの連鎖” -->
-<section class="mt-6">
-  <div class="flex items-end justify-between">
-    <div>
-      <h2 class="text-xl md:text-2xl font-bold gh-underline">思考ログ</h2>
-      <p class="opacity-70 text-sm mt-1"><%= @thought_logs&.size || 0 %> 件</p>
-    </div>
+        <section class="mt-6">
+          <div class="flex items-end justify-between">
+            <div>
+              <h2 class="text-xl md:text-2xl font-bold gh-underline">思考ログ</h2>
+              <p class="opacity-70 text-sm mt-1"><%= @thought_logs&.size || 0 %> 件</p>
+            </div>
 
-    <% if user_signed_in? && @passage.user_id == current_user.id %>
-      <%= link_to "＋ 思考ログを追加",
-                  new_passage_thought_log_path(@passage),
-                  class: "btn btn-outline btn-press" %>
-    <% end %>
-  </div>
-
-  <% if @thought_logs.present? %>
-    <div class="mt-4 space-y-3">
-      <% @thought_logs.each do |log| %>
-        <article class="rounded-2xl gh-glass p-4 hover-float">
-          <div class="flex items-center justify-between text-xs opacity-70 mb-2">
-            <span>記録日時</span>
-            <time datetime="<%= log.created_at.iso8601 %>"><%= l log.created_at, format: :long %></time>
+            <% if user_signed_in? && @passage.user_id == current_user.id %>
+              <%= link_to "＋ 思考ログを追加",
+                          new_passage_thought_log_path(@passage),
+                          class: "btn btn-outline btn-press" %>
+            <% end %>
           </div>
-          <div class="leading-relaxed text-sm whitespace-pre-wrap">
-            <%= h(log.content) %>
-          </div>
-        </article>
-      <% end %>
-    </div>
-  <% else %>
-    <div class="mt-4 rounded-2xl gh-glass p-6 text-center hover-float">
-      <p class="font-semibold">まだ思考ログはありません</p>
-      <p class="opacity-70 text-sm mt-1">この一節から連想した気づきや感情を残しておこう。</p>
-      <% if user_signed_in? && @passage.user_id == current_user.id %>
-        <div class="mt-4">
-          <%= link_to "＋ 最初の思考ログを追加",
-                      new_passage_thought_log_path(@passage),
-                      class: "btn btn-primary btn-press" %>
-        </div>
-      <% end %>
-    </div>
-  <% end %>
-</section>
 
+          <% if @thought_logs.present? %>
+            <div class="mt-4 space-y-3">
+              <% @thought_logs.each do |log| %>
+                <article class="rounded-2xl gh-glass p-4 hover-float">
+                  <div class="flex items-center justify-between text-xs opacity-70 mb-2">
+                    <span>記録日時</span>
+                    <time datetime="<%= log.created_at.iso8601 %>"><%= l log.created_at, format: :long %></time>
+                  </div>
+                  <div class="leading-relaxed text-sm whitespace-pre-wrap">
+                    <%= h(log.content) %>
+                  </div>
+                </article>
+              <% end %>
+            </div>
+          <% else %>
+            <div class="mt-4 rounded-2xl gh-glass p-6 text-center hover-float">
+              <p class="font-semibold">まだ思考ログはありません</p>
+              <p class="opacity-70 text-sm mt-1">この一節から連想した気づきや感情を残しておこう。</p>
+              <% if user_signed_in? && @passage.user_id == current_user.id %>
+                <div class="mt-4">
+                  <%= link_to "＋ 最初の思考ログを追加",
+                              new_passage_thought_log_path(@passage),
+                              class: "btn btn-primary btn-press" %>
+                </div>
+              <% end %>
+            </div>
+          <% end %>
+        </section>
 
         <div class="flex flex-wrap gap-2">
-  <% if user_signed_in? && @passage.user_id == current_user.id %>
-  <%= link_to "編集", edit_passage_path(@passage), class: "btn btn-outline btn-press" %>
-  <%= link_to "削除", passage_path(@passage),
-        data: { turbo_method: :delete, turbo_confirm: "本当に削除しますか？" },
-        class: "btn btn-error btn-press" %>
-<% end %>
+          <% if user_signed_in? && @passage.user_id == current_user.id %>
+            <%= link_to "編集", edit_passage_path(@passage), class: "btn btn-outline btn-press" %>
+            <%= link_to "削除", passage_path(@passage),
+                  data: { turbo_method: :delete, turbo_confirm: "本当に削除しますか？" },
+                  class: "btn btn-error btn-press" %>
+          <% end %>
+        </div>
       </div>
     </div>
   </div>

@@ -10,9 +10,21 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_08_31_072511) do
+ActiveRecord::Schema[7.2].define(version: 2025_09_01_062309) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "passage_customizations", force: :cascade do |t|
+    t.string "font"
+    t.string "color"
+    t.string "bg_color"
+    t.bigint "passage_id", null: false
+    t.bigint "user_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["passage_id"], name: "index_passage_customizations_on_passage_id", unique: true
+    t.index ["user_id"], name: "index_passage_customizations_on_user_id"
+  end
 
   create_table "passages", force: :cascade do |t|
     t.string "author"
@@ -53,6 +65,8 @@ ActiveRecord::Schema[7.2].define(version: 2025_08_31_072511) do
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
 
+  add_foreign_key "passage_customizations", "passages"
+  add_foreign_key "passage_customizations", "users"
   add_foreign_key "passages", "users"
   add_foreign_key "thought_logs", "passages"
 end
