@@ -3,4 +3,5 @@ class User < ApplicationRecord
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable
   has_many :passages, dependent: :destroy
+  has_many :passage_customizations, dependent: :destroy
 end

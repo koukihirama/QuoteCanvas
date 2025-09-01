@@ -18,8 +18,13 @@ class PassagesController < ApplicationController
   end
 
   def show
-    @thought_logs = @passage.thought_logs.order(created_at: :desc)
-  end
+  @thought_logs = @passage.thought_logs.order(created_at: :desc)
+  @style = {
+    bg:   @passage.customization&.bg_color.presence || @passage.bg_color.presence || "#F9FAFB",
+    text: @passage.customization&.color.presence    || @passage.text_color.presence || "#111827",
+    font: @passage.customization&.font.presence     || @passage.font_family.presence || "var(--font-serif)"
+  }
+end
 
   def edit; end
 
