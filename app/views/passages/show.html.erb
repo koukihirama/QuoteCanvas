@@ -57,6 +57,51 @@
           </dl>
         </div>
 
+        <!-- 思考ログ：この一節に紐づく“考えの連鎖” -->
+<section class="mt-6">
+  <div class="flex items-end justify-between">
+    <div>
+      <h2 class="text-xl md:text-2xl font-bold gh-underline">思考ログ</h2>
+      <p class="opacity-70 text-sm mt-1"><%= @thought_logs&.size || 0 %> 件</p>
+    </div>
+
+    <% if user_signed_in? && @passage.user_id == current_user.id %>
+      <%= link_to "＋ 思考ログを追加",
+                  new_passage_thought_log_path(@passage),
+                  class: "btn btn-outline btn-press" %>
+    <% end %>
+  </div>
+
+  <% if @thought_logs.present? %>
+    <div class="mt-4 space-y-3">
+      <% @thought_logs.each do |log| %>
+        <article class="rounded-2xl gh-glass p-4 hover-float">
+          <div class="flex items-center justify-between text-xs opacity-70 mb-2">
+            <span>記録日時</span>
+            <time datetime="<%= log.created_at.iso8601 %>"><%= l log.created_at, format: :long %></time>
+          </div>
+          <div class="leading-relaxed text-sm whitespace-pre-wrap">
+            <%= h(log.content) %>
+          </div>
+        </article>
+      <% end %>
+    </div>
+  <% else %>
+    <div class="mt-4 rounded-2xl gh-glass p-6 text-center hover-float">
+      <p class="font-semibold">まだ思考ログはありません</p>
+      <p class="opacity-70 text-sm mt-1">この一節から連想した気づきや感情を残しておこう。</p>
+      <% if user_signed_in? && @passage.user_id == current_user.id %>
+        <div class="mt-4">
+          <%= link_to "＋ 最初の思考ログを追加",
+                      new_passage_thought_log_path(@passage),
+                      class: "btn btn-primary btn-press" %>
+        </div>
+      <% end %>
+    </div>
+  <% end %>
+</section>
+
+
         <div class="flex flex-wrap gap-2">
   <% if user_signed_in? && @passage.user_id == current_user.id %>
   <%= link_to "編集", edit_passage_path(@passage), class: "btn btn-outline btn-press" %>
