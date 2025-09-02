@@ -1,5 +1,5 @@
 Rails.application.routes.draw do
-  get "thought_logs/new"
+
   get "dashboard/index"
   devise_for :users
   get "posts/index"
@@ -10,7 +10,12 @@ Rails.application.routes.draw do
   root "top#index"
   get "profile", to: "users#show", as: :profile
 
-  resources :passages, only: [ :new, :create, :show, :edit, :update, :destroy ] do
-    resources :thought_logs, only: [ :new, :create ]
+  resources :passages, only: [:new, :create, :show, :edit, :update, :destroy] do
+    # 思考ログ（複数：new/create）
+    resources :thought_logs, only: [:new, :create]
+
+    # カスタマイズ（1:1：new/create）
+    resource :customization, only: [:new, :create, :edit, :update],
+                            controller: "passage_customizations"
   end
 end

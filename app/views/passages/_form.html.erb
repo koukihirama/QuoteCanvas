@@ -1,4 +1,7 @@
-<%= form_with model: passage, local: true, class: "space-y-5" do |f| %>
+<%= form_with model: passage,
+              local: true,
+              html: { id: "passage-form", autocomplete: "off" },
+              class: "space-y-6" do |f| %>
   <% if passage.errors.any? %>
     <div class="alert alert-error">
       <span>入力にエラーがあるよ（<%= passage.errors.count %>件）</span>
@@ -10,6 +13,7 @@
     </div>
   <% end %>
 
+  <!-- 本文 -->
   <div>
     <%= f.label :content, "一節本文", class: "block font-semibold mb-1" %>
     <%= f.text_area :content, rows: 5,
@@ -17,6 +21,7 @@
           data: { preview_target: "content" } %>
   </div>
 
+  <!-- タイトル / 著者 -->
   <div class="grid gap-4 md:grid-cols-2">
     <div>
       <%= f.label :title, "作品タイトル", class: "block font-semibold mb-1" %>
@@ -32,52 +37,200 @@
     </div>
   </div>
 
-  <!-- カスタマイズはあとで本実装。今はテキストで置いておく -->
-  <details class="collapse collapse-arrow bg-base-200">
-    <summary class="collapse-title font-semibold">見た目のカスタマイズ（仮）</summary>
+  <!-- 見た目のカスタマイズ（作成時にも軽く設定できる） -->
+  <details class="collapse collapse-arrow bg-base-200 mt-2">
+    <summary class="collapse-title font-semibold">見た目のカスタマイズ（簡易）</summary>
     <div class="collapse-content grid gap-4 md:grid-cols-3">
-      <div>
-        <%= f.label :bg_color, "背景色 (例: #F9FAFB)", class: "block font-semibold mb-1" %>
-        <%= f.text_field :bg_color,
-              class: "input input-bordered w-full",
-              data: { preview_target: "bgColor" } %>
-      </div>
-      <div>
-        <%= f.label :text_color, "文字色 (例: #111827)", class: "block font-semibold mb-1" %>
-        <%= f.text_field :text_color,
-              class: "input input-bordered w-full",
-              data: { preview_target: "textColor" } %>
-      </div>
-      <div>
-        <%= f.label :font_family, "フォント (例: var(--font-serif))", class: "block font-semibold mb-1" %>
-        <%= f.text_field :font_family,
-              class: "input input-bordered w-full",
-              data: { preview_target: "fontFamily" } %>
-      </div>
+      <%= f.fields_for :customization do |c| %>
+      <%= c.hidden_field :id if c.object&.persisted? %>
+        <div>
+          <%= c.label :font, "フォント", class: "block font-semibold mb-1" %>
+          <%= c.select :font,
+                options_for_select([
+                  ["標準（Serif）", "var(--font-serif)"],
+                  ["標準（Sans）",  "var(--font-sans)"],
+                  ["等幅（Mono）",  "var(--font-mono)"]
+                ], c.object&.font),
+                { include_blank: "（未選択 = 既定）" },
+                class: "select select-bordered w-full",
+                data: { preview_target: "font" } %>
+        </div>
+
+        <div>
+          <%= c.label :color, "文字色 (#RRGGBB / #RGB)", class: "block font-semibold mb-1" %>
+          <div class="flex gap-2">
+            <%= c.text_field :color,
+                  class: "input input-bordered w-full",
+                  placeholder: "#111827",
+                  pattern: "#(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{6})",
+                  title: "#RRGGBB 形式で入力してね（例: #111827）",
+                  data: { preview_target: "textColor" } %>
+            <input type="color" class="input w-12 p-0"
+                   value="<%= (c.object&.color.presence || passage.customization&.color.presence || passage.text_color.presence || '#111827') %>"
+                   data-colorpicker="textColor" />
+          </div>
+        </div>
+
+        <div>
+          <%= c.label :bg_color, "背景色 (#RRGGBB / #RGB)", class: "block font-semibold mb-1" %>
+          <div class="flex gap-2">
+            <%= c.text_field :bg_color,
+                  class: "input input-bordered w-full",
+                  placeholder: "#F9FAFB",
+                  pattern: "#(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{6})",
+                  title: "#RRGGBB 形式で入力してね（例: #F9FAFB）",
+                  data: { preview_target: "bgColor" } %>
+            <input type="color" class="input w-12 p-0"
+                   value="<%= (c.object&.bg_color.presence || passage.customization&.bg_color.presence || passage.bg_color.presence || '#F9FAFB') %>"
+                   data-colorpicker="bgColor" />
+          </div>
+        </div>
+      <% end %>
     </div>
   </details>
 
-  <!-- ▼ ここが追加：依存ゼロのリアルタイムプレビュー -->
+  <!-- 専用ページでガッツリ調整したい人向けの導線（保存済み時のみ） -->
+  <div class="mt-2">
+    <% if passage.persisted? %>
+      <% if passage.customization.present? %>
+        <%= link_to "見た目をカスタマイズ（詳細設定）",
+              edit_passage_customization_path(passage),
+              class: "btn btn-outline" %>
+      <% else %>
+        <%= link_to "見た目をカスタマイズ（詳細設定）",
+              new_passage_customization_path(passage),
+              class: "btn btn-outline" %>
+      <% end %>
+    <% else %>
+      <button class="btn btn-outline" disabled>見た目をカスタマイズ（詳細設定）</button>
+      <p class="text-xs opacity-70 mt-1">※ まず本文を保存してから詳細カスタマイズできるよ</p>
+    <% end %>
+  </div>
+
+  <!-- プレビュー（Customization > 旧カラム > デフォルト） -->
+  <% style_bg   = passage.customization&.bg_color.presence   || passage.bg_color.presence    || "#F9FAFB" %>
+  <% style_text = passage.customization&.color.presence      || passage.text_color.presence  || "#111827" %>
+  <% style_font = passage.customization&.font.presence       || passage.font_family.presence || "var(--font-serif)" %>
+
   <div class="mt-8">
     <div class="flex items-center justify-between mb-2">
       <h2 class="text-xl font-bold gh-underline">プレビュー</h2>
-      <span class="text-sm opacity-70">入力に合わせて自動更新（遅延 200ms）</span>
+      <span class="text-sm opacity-70">入力に合わせて自動更新</span>
     </div>
 
     <div id="preview-card" class="relative rounded-2xl p-6 border gh-glass"
-         style="background:<%= passage.bg_color.presence || '#F9FAFB' %>;
-                color:<%= passage.text_color.presence || '#111827' %>;
-                font-family:<%= passage.font_family.presence || 'var(--font-serif)' %>;">
+         style="background:<%= style_bg %>; color:<%= style_text %>; font-family:<%= style_font %>;"
+         data-fallback-bg="<%= style_bg %>"
+         data-fallback-text="<%= style_text %>"
+         data-fallback-font="<%= style_font %>">
       <div class="absolute inset-0 gh-grain pointer-events-none rounded-2xl"></div>
 
-      <div id="preview-meta" class="text-[11px] opacity-70 mb-1 font-sans"></div>
-      <div id="preview-content" class="text-lg md:text-2xl font-semibold leading-relaxed whitespace-pre-wrap"></div>
+      <div id="preview-meta" class="text-[11px] opacity-70 mb-1 font-sans">
+        <% meta = [f.object.author.presence, f.object.title.presence&.yield_self { |t| "『#{t}』" }].compact.join(" ") %>
+        <%= meta %>
+      </div>
+
+      <div id="preview-content"
+           class="text-lg md:text-2xl font-semibold leading-relaxed whitespace-pre-wrap"></div>
     </div>
   </div>
-  <!-- ▲ 追加ここまで -->
 
   <div class="flex gap-2">
     <%= f.submit (passage.persisted? ? "更新する" : "保存する"), class: "btn btn-primary" %>
-    <%= link_to "キャンセル", (passage.persisted? ? passage_path(passage) : dashboard_path), class: "btn btn-ghost" %>
+    <%= link_to "キャンセル",
+          (passage.persisted? ? passage_path(passage) : dashboard_path),
+          class: "btn btn-ghost" %>
   </div>
 <% end %>
+
+<!-- 最小のプレビュー更新スクリプト（Stimulus不要・依存ゼロ） -->
+<script>
+(function boot() {
+  const run = () => {
+    const form = document.getElementById("passage-form");
+    if (!form) return;
+
+    const metaEl    = form.querySelector("#preview-meta");
+    const contentEl = form.querySelector("#preview-content");
+    const title     = form.querySelector('[data-preview-target="title"]');
+    const author    = form.querySelector('[data-preview-target="author"]');
+    const body      = form.querySelector('[data-preview-target="content"]');
+
+    // カスタマイズ入力（text + color）
+    const fontSel     = form.querySelector('[data-preview-target="font"]');
+    const textInp     = form.querySelector('[data-preview-target="textColor"]');
+    const bgInp       = form.querySelector('[data-preview-target="bgColor"]');
+    const textPicker  = form.querySelector('input[data-colorpicker="textColor"]');
+    const bgPicker    = form.querySelector('input[data-colorpicker="bgColor"]');
+
+    const card = form.querySelector("#preview-card");
+    const FALLBACK = {
+      font: card?.dataset.fallbackFont || "var(--font-serif)",
+      text: card?.dataset.fallbackText || "#111827",
+      bg:   card?.dataset.fallbackBg   || "#F9FAFB",
+    };
+
+    const updateMeta = () => {
+      const a = (author?.value || "").trim();
+      const t = (title?.value  || "").trim();
+      metaEl && (metaEl.textContent = [a, t ? `『${t}』` : null].filter(Boolean).join(" "));
+    };
+
+    const updateBody = () => {
+      contentEl && (contentEl.innerText = (body?.value || ""));
+    };
+
+    const applyStyle = () => {
+      if (!card) return;
+      card.style.fontFamily = (fontSel?.value?.trim() || FALLBACK.font);
+      card.style.color      = (textInp?.value?.trim() || FALLBACK.text);
+      card.style.background = (bgInp?.value?.trim()   || FALLBACK.bg);
+
+      // バッジのHEX表示も更新（任意）
+      form.querySelectorAll('[data-colorpicker]').forEach((picker) => {
+        const k = picker.dataset.colorpicker;
+        const src = (k === "textColor") ? textInp : bgInp;
+        const val = (src?.value || "").trim();
+        const badge = picker.parentElement?.querySelector(".badge");
+        if (badge) badge.textContent = (val || (k === "textColor" ? FALLBACK.text : FALLBACK.bg)).toUpperCase();
+      });
+    };
+
+    // picker ⇄ text 双方向バインド（input + change 両方で安定）
+    const bindPair = (textInput, pickerInput) => {
+      if (!textInput || !pickerInput) return;
+      const fromPicker = (e) => { textInput.value = e.target.value; applyStyle(); };
+      pickerInput.addEventListener("input",  fromPicker);
+      pickerInput.addEventListener("change", fromPicker);
+      textInput.addEventListener("input", (e) => {
+        const v = e.target.value;
+        if (/^#(?:[0-9a-fA-F]{3}){1,2}$/.test(v)) pickerInput.value = v;
+        applyStyle();
+      });
+    };
+
+    // イベント
+    [title, author].forEach(el => el && el.addEventListener("input", updateMeta));
+    body && body.addEventListener("input", updateBody);
+    fontSel && fontSel.addEventListener("change", applyStyle);
+    bindPair(textInp, textPicker);
+    bindPair(bgInp,   bgPicker);
+
+    // 初期反映（ここ超重要）
+    updateMeta(); updateBody(); applyStyle();
+  };
+
+  // Turbo対策：キャッシュ復帰も拾う
+  if (window.Turbo) {
+    document.addEventListener("turbo:load", run);
+    document.addEventListener("turbo:render", run);
+  } else {
+    // 非Turboでも動くように
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", run);
+    } else {
+      run();
+    }
+  }
+})();
+</script>
