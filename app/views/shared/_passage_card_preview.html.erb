@@ -1,0 +1,25 @@
+<%# 必要locals: passage:, style: {bg:, text:, font:} %>
+<div class="mt-8">
+  <div class="flex items-center justify-between mb-2">
+    <h2 class="text-xl font-bold gh-underline">プレビュー</h2>
+    <span class="text-sm opacity-70">入力に合わせて自動更新</span>
+  </div>
+
+  <div id="preview-card" class="relative rounded-2xl p-6 border gh-glass"
+       style="background:<%= style[:bg] %>;
+              color:<%= style[:text] %>;
+              font-family:<%= style[:font] %>;">
+    <div class="absolute inset-0 gh-grain pointer-events-none rounded-2xl"></div>
+
+    <% if passage.title.present? || passage.author.present? %>
+      <div class="text-[11px] opacity-70 mb-1 font-sans">
+        <%= [passage.author, passage.title.presence&.yield_self { |t| "『#{t}』" }].compact.join(" ") %>
+      </div>
+    <% end %>
+
+    <div id="preview-content"
+         class="text-lg md:text-2xl font-semibold leading-relaxed whitespace-pre-wrap">
+      <%= simple_format(h(passage.content.to_s)) %>
+    </div>
+  </div>
+</div>

@@ -9,15 +9,22 @@
     <%= link_to "← 戻る", (request.referer || root_path), class: "link link-primary" %>
   </div>
 
+  <%# --- 安全なフォールバック（@style が無い場合でも実効値を計算） --- %>
+  <% style = @style || {
+       bg:   @passage.customization&.bg_color.presence || @passage.bg_color.presence    || "#F9FAFB",
+       text: @passage.customization&.color.presence    || @passage.text_color.presence  || "#111827",
+       font: @passage.customization&.font.presence     || @passage.font_family.presence || "var(--font-serif)"
+     } %>
+
   <div class="rounded-3xl gh-glass p-6 md:p-8 relative overflow-hidden">
     <div class="pointer-events-none absolute -top-24 -right-24 size-80 rounded-full bg-gradient-to-tr from-amber-200/40 to-rose-200/40 blur-3xl"></div>
 
     <div class="grid gap-6 md:grid-cols-2 items-start">
       <!-- カード本体 -->
       <div class="relative rounded-2xl p-6 border card-lift"
-           style="background:<%= @style[:bg] %>;
-                  color:<%= @style[:text] %>;
-                  font-family:<%= @style[:font] %>;">
+           style="background:<%= style[:bg] %>;
+                  color:<%= style[:text] %>;
+                  font-family:<%= style[:font] %>;">
         <div class="absolute inset-0 gh-grain pointer-events-none rounded-2xl"></div>
 
         <% if @passage.title.present? || @passage.author.present? %>
@@ -48,7 +55,7 @@
 
             <dt class="opacity-70">背景色</dt>
             <dd class="col-span-2">
-              <code><%= @style[:bg] %></code>
+              <code><%= style[:bg] %></code>
               <% if @passage.customization&.bg_color.present? %>
                 <span class="badge badge-ghost ml-2">custom</span>
               <% end %>
@@ -56,7 +63,7 @@
 
             <dt class="opacity-70">文字色</dt>
             <dd class="col-span-2">
-              <code><%= @style[:text] %></code>
+              <code><%= style[:text] %></code>
               <% if @passage.customization&.color.present? %>
                 <span class="badge badge-ghost ml-2">custom</span>
               <% end %>
@@ -64,7 +71,7 @@
 
             <dt class="opacity-70">フォント</dt>
             <dd class="col-span-2">
-              <code><%= @style[:font] %></code>
+              <code><%= style[:font] %></code>
               <% if @passage.customization&.font.present? %>
                 <span class="badge badge-ghost ml-2">custom</span>
               <% end %>
@@ -81,9 +88,21 @@
             </div>
 
             <% if user_signed_in? && @passage.user_id == current_user.id %>
-              <%= link_to "＋ 思考ログを追加",
-                          new_passage_thought_log_path(@passage),
-                          class: "btn btn-outline btn-press" %>
+              <div class="flex gap-2">
+                <%= link_to "＋ 思考ログを追加",
+                            new_passage_thought_log_path(@passage),
+                            class: "btn btn-outline btn-press" %>
+
+                <% if @passage.customization.present? %>
+                  <%= link_to "見た目をカスタマイズ",
+                              edit_passage_customization_path(@passage),
+                              class: "btn btn-ghost btn-press" %>
+                <% else %>
+                  <%= link_to "見た目をカスタマイズ",
+                              new_passage_customization_path(@passage),
+                              class: "btn btn-ghost btn-press" %>
+                <% end %>
+              </div>
             <% end %>
           </div>
 
@@ -116,9 +135,22 @@
           <% end %>
         </section>
 
+        <!-- 下部のアクション群 -->
         <div class="flex flex-wrap gap-2">
           <% if user_signed_in? && @passage.user_id == current_user.id %>
             <%= link_to "編集", edit_passage_path(@passage), class: "btn btn-outline btn-press" %>
+
+            <%# カスタマイズ導線（下部にも設置） %>
+            <% if @passage.customization.present? %>
+              <%= link_to "見た目をカスタマイズ",
+                          edit_passage_customization_path(@passage),
+                          class: "btn btn-ghost btn-press" %>
+            <% else %>
+              <%= link_to "見た目をカスタマイズ",
+                          new_passage_customization_path(@passage),
+                          class: "btn btn-ghost btn-press" %>
+            <% end %>
+
             <%= link_to "削除", passage_path(@passage),
                   data: { turbo_method: :delete, turbo_confirm: "本当に削除しますか？" },
                   class: "btn btn-error btn-press" %>
