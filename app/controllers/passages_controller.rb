@@ -1,7 +1,7 @@
 class PassagesController < ApplicationController
   before_action :authenticate_user!
-  before_action :set_passage,   only: [:show, :edit, :update, :destroy]
-  before_action :ensure_owner!, only: [:edit, :update, :destroy]
+  before_action :set_passage,   only: [ :show, :edit, :update, :destroy ]
+  before_action :ensure_owner!, only: [ :edit, :update, :destroy ]
 
   def new
     @passage = current_user.passages.new
@@ -78,7 +78,7 @@ class PassagesController < ApplicationController
     params.require(:passage).permit(
       :content, :title, :author,
       :bg_color, :text_color, :font_family,
-      customization_attributes: [:id, :font, :color, :bg_color]
+      customization_attributes: [ :id, :font, :color, :bg_color ]
     )
   end
 end
