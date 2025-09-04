@@ -3,10 +3,8 @@ class PassageCustomizationsController < ApplicationController
   before_action :set_passage
 
   def new
-    if @passage.customization
-      redirect_to edit_passage_customization_path(@passage),
-                  notice: "このカードには既にカスタマイズが設定されています。" and return
-    end
+    return redirect_to(edit_passage_customization_path(@passage),
+                       notice: "このカードには既にカスタマイズが設定されています。") if @passage.customization
     @customization = @passage.build_customization(user: current_user)
   end
 
@@ -21,20 +19,11 @@ class PassageCustomizationsController < ApplicationController
   end
 
   def edit
-    @customization = @passage.customization
-    unless @customization
-      redirect_to new_passage_customization_path(@passage),
-                  notice: "まだカスタマイズがないので新規作成してね。" and return
-    end
+    @customization = @passage.customization or return redirect_to(new_passage_customization_path(@passage))
   end
 
   def update
     @customization = @passage.customization
-    unless @customization
-      redirect_to new_passage_customization_path(@passage),
-                  alert: "先にカスタマイズを作成してから更新してね。" and return
-    end
-
     if @customization.update(customization_params)
       redirect_to @passage, notice: "カスタマイズを更新したよ。"
     else
@@ -46,13 +35,14 @@ class PassageCustomizationsController < ApplicationController
   private
 
   def set_passage
-    # 所有者制約をここでかけてるので ensure_owner は不要
+    # 自分のカードだけ操作可
     @passage = current_user.passages.find(params[:passage_id])
-  rescue ActiveRecord::RecordNotFound
-    redirect_to dashboard_path, alert: "カードが見つからないよ。" and return
   end
 
   def customization_params
-    params.require(:passage_customization).permit(:font, :color, :bg_color)
+    # 空文字は nil にして扱いやすく
+    cleaned = params.require(:passage_customization).permit(:font, :color, :bg_color).to_h
+    cleaned.transform_values! { |v| v.is_a?(String) && v.strip == "" ? nil : v }
+    cleaned
   end
 end

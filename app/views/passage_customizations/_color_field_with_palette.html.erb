@@ -1,45 +1,36 @@
-<%# locals: f:, field:, label:, placeholder:, picker_key:, default_color: %>
+<%# locals: f:, field:, label:, picker_key:, default_color: %>
 <div>
   <%= f.label field, label, class: "block font-semibold mb-1" %>
 
-  <div class="flex gap-2 items-center">
-    <%= f.text_field field,
-          class: "input input-bordered w-full",
-          placeholder: placeholder,
-          pattern: "#(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{6})",
-          title: "#RRGGBB 形式で入力してね",
-          data: { preview_target: (picker_key == "textColor" ? "textColor" : "bgColor") } %>
-
-    <input type="color" class="input w-12 p-0"
-           value="<%= default_color %>"
-           data-colorpicker="<%= picker_key %>" />
-
-    <span class="badge"><%= (default_color || "").upcase %></span>
-  </div>
-
-  <%# よく使うプリセット %>
-  <% presets = %w[
-    #111827 #374151 #6B7280 #9CA3AF #E5E7EB #F9FAFB
-    #EF4444 #F59E0B #10B981 #3B82F6 #8B5CF6 #EC4899
-  ] %>
-  <div class="mt-2 flex flex-wrap gap-2">
-    <% presets.each do |hex| %>
+  <!-- プリセット（お好みで色追加OK） -->
+  <div class="flex flex-wrap gap-2 mb-2">
+    <% [
+      "#111827", "#374151", "#6B7280", "#9CA3AF", "#F9FAFB",
+      "#000000", "#FFFFFF", "#EF4444", "#F59E0B", "#10B981",
+      "#3B82F6", "#8B5CF6", "#EC4899"
+    ].each do |hex| %>
       <button type="button"
-              class="size-7 rounded-full border"
+              class="size-6 rounded-full border"
               style="background:<%= hex %>"
               title="<%= hex %>"
               data-color-preset="<%= picker_key %>"
               data-value="<%= hex %>"></button>
     <% end %>
-    <button type="button" class="btn btn-xs btn-ghost"
-            data-pick-current="<%= picker_key %>">現在値を使う</button>
-    <button type="button" class="btn btn-xs"
-            data-clear-color="<%= picker_key %>">未指定にする</button>
   </div>
 
-  <%# 最近使った色（localStorage） %>
-  <div class="mt-2 flex items-center gap-2 text-xs opacity-70">
-    <span>最近：</span>
-    <div class="flex flex-wrap gap-2" data-recent="<%= picker_key %>"></div>
+  <div class="flex items-center gap-2">
+    <%= f.text_field field,
+          class: "input input-bordered w-full",
+          placeholder: default_color,
+          value: default_color,
+          data: { preview_target: picker_key } %>
+    <input type="color"
+           class="input w-12 p-0"
+           value="<%= default_color %>"
+           data-colorpicker="<%= picker_key %>" />
+    <span class="badge"><%= default_color.upcase %></span>
   </div>
+
+  <!-- 最近使った色（JSで差し込む） -->
+  <div class="mt-2 flex flex-wrap gap-2" data-recent="<%= picker_key %>"></div>
 </div>
