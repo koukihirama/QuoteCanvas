@@ -19,4 +19,5 @@ test:
 
 production:
   <<: *default
+  # Render の環境変数だけを使う
   url: <%= ENV["DATABASE_URL"] %>
