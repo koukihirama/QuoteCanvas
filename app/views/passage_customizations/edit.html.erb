@@ -1,12 +1,12 @@
 <div class="container mx-auto max-w-5xl px-4 md:px-8 py-8 md:py-12 rounded-3xl gh-glass relative overflow-hidden">
   <div class="pointer-events-none absolute -top-24 -right-24 size-80 rounded-full bg-gradient-to-tr from-amber-200/40 to-rose-200/40 blur-3xl"></div>
-  <h1 class="text-2xl md:text-3xl font-extrabold gh-underline mb-6">カスタマイズを設定</h1>
+  <h1 class="text-2xl md:text-3xl font-extrabold gh-underline mb-6">カスタマイズを編集</h1>
 
   <%= render "passage_customizations/form",
       customization: @customization,
       passage: @passage,
-      url: passage_customization_path(@passage),  # POST
-      submit_label: "保存する",
+      url: passage_customization_path(@passage),  # PATCH/PUT
+      submit_label: "更新する",
       fallback: {
         bg:   @passage.customization&.bg_color.presence || @passage.bg_color.presence    || "#F9FAFB",
         text: @passage.customization&.color.presence    || @passage.text_color.presence  || "#111827",
