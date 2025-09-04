@@ -1,24 +1,22 @@
 default: &default
   adapter: postgresql
   encoding: unicode
-  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+  pool: <%= ENV.fetch("RAILS_MAX_THREADS", 5) %>
 
-# ローカル Docker 用（そのままでOK）
 development:
   <<: *default
+  database: myapp_development
   host: db
   username: postgres
   password: password
-  database: myapp_development
 
 test:
   <<: *default
+  database: myapp_test
   host: db
   username: postgres
   password: password
-  database: myapp_test
 
-# Render 本番：URL だけを使う（他の host/username 等は書かない）
 production:
+  <<: *default
   url: <%= ENV["DATABASE_URL"] %>
-  pool: <%= ENV.fetch("RAILS_MAX_THREADS", 5) %>
