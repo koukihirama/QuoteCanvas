@@ -10,9 +10,20 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_09_01_062309) do
+ActiveRecord::Schema[7.2].define(version: 2025_09_05_074633) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "book_infos", force: :cascade do |t|
+    t.bigint "passage_id", null: false
+    t.string "title"
+    t.string "author"
+    t.date "published_date"
+    t.string "isbn"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["passage_id"], name: "index_book_infos_on_passage_id"
+  end
 
   create_table "passage_customizations", force: :cascade do |t|
     t.string "font"
@@ -65,6 +76,7 @@ ActiveRecord::Schema[7.2].define(version: 2025_09_01_062309) do
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
 
+  add_foreign_key "book_infos", "passages"
   add_foreign_key "passage_customizations", "passages"
   add_foreign_key "passage_customizations", "users"
   add_foreign_key "passages", "users"
