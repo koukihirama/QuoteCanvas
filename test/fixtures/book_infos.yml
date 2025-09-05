@@ -1,0 +1,15 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  passage: one
+  title: MyString
+  author: MyString
+  published_date: 2025-09-05
+  isbn: MyString
+
+two:
+  passage: two
+  title: MyString
+  author: MyString
+  published_date: 2025-09-05
+  isbn: MyString
