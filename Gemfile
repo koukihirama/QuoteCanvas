@@ -60,3 +60,10 @@ gem "tailwindcss-rails"
 gem "tailwindcss-ruby", "3.4.17"
 
 gem "devise", "~> 4.9"
+
+# HTTPクライアント
+gem "faraday"
+gem "faraday-follow_redirects"
+
+# JSON（高速・厳密にしたい場合。標準JSONでもOK）
+gem "oj"
