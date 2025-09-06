@@ -13,16 +13,18 @@ Rails.application.routes.draw do
 
   # 書籍ルックアップ（今回の主役）
   get "books/lookup", to: "books#lookup"
+  # テストが参照している posts_index_url を復活
+  get "posts/index", to: "posts#index", as: :posts_index
 
   # passages
-  resources :passages, only: [:new, :create, :show, :edit, :update, :destroy] do
-    resources :thought_logs, only: [:new, :create]
-    resource  :customization, only: [:new, :create, :edit, :update],
+  resources :passages, only: [ :new, :create, :show, :edit, :update, :destroy ] do
+    resources :thought_logs, only: [ :new, :create ]
+    resource  :customization, only: [ :new, :create, :edit, :update ],
               controller: "passage_customizations"
   end
 
   # （任意）API用エンドポイントも残すなら
   namespace :api do
-    resources :books, only: [:index]  # /api/books?isbn=... or &title=...
+    resources :books, only: [ :index ]  # /api/books?isbn=... or &title=...
   end
 end

@@ -18,7 +18,7 @@ module BookLookups
     end
 
     def by_title_author(title:, author: nil)
-      key = [title, author].compact.join("|")
+      key = [ title, author ].compact.join("|")
       Rails.cache.fetch(cache_key("ta", key), expires_in: 3.hours) do
         (google.by_title_author(title: title, author: author) +
          openlib.by_title_author(title: title, author: author)).presence || []

@@ -8,14 +8,14 @@ module BookLookups
       return [] unless res.success?
 
       json = read_json(res.body)
-      [normalize_from_isbn(json, isbn)].compact
+      [ normalize_from_isbn(json, isbn) ].compact
     rescue Faraday::Error
       []
     end
 
     def by_title_author(title:, author: nil)
       # シンプル検索: /search.json?q=...
-      query = [title, author].compact.join(" ")
+      query = [ title, author ].compact.join(" ")
       res = http.get("#{BASE}/search.json", { q: query, limit: 5 })
       return [] unless res.success?
 
