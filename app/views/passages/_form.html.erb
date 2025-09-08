@@ -2,7 +2,6 @@
 <% style_text = passage.customization&.color.presence      || passage.text_color.presence  || "#111827" %>
 <% style_font = passage.customization&.font.presence       || passage.font_family.presence || "var(--font-serif)" %>
 
-
 <%= form_with model: passage,
               local: true,
               html: { id: "passage-form", autocomplete: "off" },
@@ -165,7 +164,6 @@
     </div>
 
     <%# ================= 右：PC用 sticky プレビュー ================= %>
-
     <div class="hidden md:block md:sticky md:top-24">
       <div class="mb-2">
         <h2 class="text-xl font-bold gh-underline">プレビュー</h2>
@@ -235,16 +233,16 @@
 
   const anyCard = cardD || cardM;
   const FALLBACK = {
-    font: anyCard?.style.fontFamily || "var(--font-serif)",
-    text: anyCard?.style.color      || "#111827",
-    bg:   anyCard?.style.background || "#F9FAFB"
+    font: (anyCard && anyCard.style.fontFamily) || "var(--font-serif)",
+    text: (anyCard && anyCard.style.color)      || "#111827",
+    bg:   (anyCard && anyCard.style.background) || "#F9FAFB"
   };
 
   function setCardStyle(el){
     if (!el) return;
-    el.style.fontFamily = (fontSel?.value?.trim() || FALLBACK.font);
-    el.style.color      = (textInp?.value?.trim() || FALLBACK.text);
-    el.style.background = (bgInp?.value?.trim()   || FALLBACK.bg);
+    el.style.fontFamily = (fontSel && fontSel.value.trim()) || FALLBACK.font;
+    el.style.color      = (textInp && textInp.value.trim()) || FALLBACK.text;
+    el.style.background = (bgInp   && bgInp.value.trim())   || FALLBACK.bg;
   }
 
   function updateMeta(){
@@ -288,7 +286,7 @@
     });
   });
 
-  // プリセット色・未指定・現在色
+  // 最近色ユーティリティ
   function rgbToHex(rgb) {
     const m = rgb.match(/\d+/g);
     if (!m) return "";
@@ -337,6 +335,7 @@
     }
   }
 
+  // プリセット/未指定/現在色
   form.querySelectorAll('[data-color-preset]').forEach(btn => {
     btn.addEventListener("click", (e) => {
       const key = e.currentTarget.dataset.colorPreset;
@@ -361,7 +360,8 @@
       const key = e.currentTarget.dataset.pickCurrent;
       const text = key === "textColor" ? textInp : bgInp;
       const prop = key === "textColor" ? "color" : "backgroundColor";
-      const val = (cardD || cardM) ? rgbToHex(getComputedStyle(cardD || cardM)[prop]) : "";
+      const source = cardD || cardM;
+      const val = source ? rgbToHex(getComputedStyle(source)[prop]) : "";
       if (text && val) text.value = val;
       const pick = key === "textColor" ? textPick : bgPick;
       if (pick) pick.value = val;
@@ -379,7 +379,7 @@
   // 初期反映
   updateMeta(); updateBody(); applyStyleBoth(); renderRecent();
 
-  // モバイル：展開/収納（任意）
+  // モバイル：展開/収納
   const toggleBtn = document.getElementById('toggle-mobile-preview');
   if (toggleBtn && cardM){
     let expanded = true;

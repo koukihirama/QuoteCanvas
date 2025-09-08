@@ -79,6 +79,24 @@
           </dl>
         </div>
 
+        <% if @passage.book_info.present? %>
+  <% b = @passage.book_info %>
+  <div class="mt-6 rounded-2xl gh-glass p-5">
+    <div class="flex gap-3 items-start">
+      <% if b.cover_url.present? %>
+        <img src="<%= b.cover_url %>" alt="" class="w-16 h-24 object-cover rounded">
+      <% end %>
+      <div>
+        <div class="font-semibold"><%= b.title %></div>
+        <div class="opacity-70"><%= b.author %></div>
+        <div class="opacity-60 text-sm">
+          <%= [b.publisher, b.published_date, b.isbn].compact_blank.join(" / ") %>
+        </div>
+      </div>
+    </div>
+  </div>
+<% end %>
+
         <!-- 思考ログ：この一節に紐づく“考えの連鎖” -->
         <section class="mt-6">
           <div class="flex items-end justify-between">
