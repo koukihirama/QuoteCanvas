@@ -54,5 +54,4 @@ Rails.application.configure do
   config.assets.debug   = true              # 展開表示でデバッグしやすく
 
   config.assets.digest  = false             # 指紋つきURLをやめて404回避
-
 end

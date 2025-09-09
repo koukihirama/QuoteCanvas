@@ -24,7 +24,7 @@ class PassagesController < ApplicationController
     @passage.assign_attributes(passage_params)
     @passage.customization&.user ||= current_user
 
-    Rails.logger.info("[passages#create] book_info_attrs=#{params.dig(:passage,:book_info_attributes).inspect}")
+    Rails.logger.info("[passages#create] book_info_attrs=#{params.dig(:passage, :book_info_attributes).inspect}")
 
     if @passage.save
       redirect_to @passage, notice: "カードを保存したよ。"
@@ -44,7 +44,7 @@ class PassagesController < ApplicationController
       @passage.build_customization(user: current_user)
     end
 
-    Rails.logger.info("[passages#update] book_info_attrs=#{params.dig(:passage,:book_info_attributes).inspect}")
+    Rails.logger.info("[passages#update] book_info_attrs=#{params.dig(:passage, :book_info_attributes).inspect}")
 
     if @passage.update(passage_params)
       redirect_to @passage, notice: "カードを更新したよ。"
@@ -96,12 +96,11 @@ class PassagesController < ApplicationController
   params.require(:passage).permit(
     :content, :title, :author,
     :bg_color, :text_color, :font_family,
-    customization_attributes: [:id, :font, :color, :bg_color],
+    customization_attributes: [ :id, :font, :color, :bg_color ],
     book_info_attributes: [
       :id, :title, :author, :published_date, :isbn,
       :cover_url, :publisher, :page_count, :source, :source_id
     ]
   )
 end
-
 end
