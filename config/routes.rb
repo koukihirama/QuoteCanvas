@@ -11,6 +11,8 @@ Rails.application.routes.draw do
   get "dashboard", to: "dashboard#index"
   get "profile",   to: "users#show", as: :profile
 
+  get "books/lookup", to: "books#lookup"
+
   # 書籍検索フォーム画面
   resources :book_infos, only: [] do
     collection do

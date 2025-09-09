@@ -3,54 +3,54 @@ module BookLookups
     ENDPOINT = "https://www.googleapis.com/books/v1/volumes"
 
     def by_isbn(isbn)
-      q = "isbn:#{isbn}"
-      fetch(q)
+      q = "isbn:#{digits_or_x(isbn)}"
+      get_and_normalize(q:)
     end
 
     def by_title_author(title:, author: nil)
       parts = []
-      parts << "intitle:#{title}" if title.present?
+      parts << "intitle:#{title}"   if title.present?
       parts << "inauthor:#{author}" if author.present?
-      q = parts.presence&.join("+") || title
-      fetch(q)
+      return [] if parts.empty?
+      get_and_normalize(q: parts.join("+"))
     end
 
     private
 
-    def fetch(q)
-      params = { q: q, maxResults: 5 }
-      key = ENV["GOOGLE_BOOKS_API_KEY"].to_s
+    def get_and_normalize(q:)
+      params = { q: q }
+      key = ENV["GOOGLE_BOOKS_API_KEY"].to_s.strip
       params[:key] = key if key.present?
 
-      res = http.get(ENDPOINT, params)
-      return [] unless res.success?
-
-      json = read_json(res.body)
-      Array(json[:items]).map { |item| normalize(item) }.compact
-    rescue Faraday::Error
+      res = conn.get(ENDPOINT, params)
+      Array(res.body["items"]).map { |it| normalize(it) }
+    rescue => e
+      Rails.logger.error("GoogleBooksClient error: #{e.class} #{e.message}")
       []
     end
 
-    # Google → 共通スキーマへ
     def normalize(item)
-      v = item[:volumeInfo] || {}
-      ids = Array(v[:industryIdentifiers]).index_by { |id| id[:type] } rescue {}
-      isbn_10 = ids&.dig("ISBN_10", :identifier)
-      isbn_13 = ids&.dig("ISBN_13", :identifier)
-
+      vi = item["volumeInfo"] || {}
+      ids = Array(vi["industryIdentifiers"])
+      isbn10 = ids.find { |h| h["type"] == "ISBN_10" }&.dig("identifier")
+      isbn13 = ids.find { |h| h["type"] == "ISBN_13" }&.dig("identifier")
       {
-        source: "google_books",
-        source_id: item[:id],
-        title: v[:title],
-        authors: Array(v[:authors]),
-        published_date: v[:publishedDate],
-        isbn_10: isbn_10,
-        isbn_13: isbn_13,
-        description: v[:description],
-        publisher: v[:publisher],
-        page_count: v[:pageCount],
-        cover_url: v.dig(:imageLinks, :thumbnail) || v.dig(:imageLinks, :smallThumbnail)
-      }.compact_blank
+        source:         "google_books",
+        source_id:      item["id"],
+        title:          vi["title"],
+        authors:        vi["authors"],
+        published_date: vi["publishedDate"],
+        description:    vi["description"],
+        page_count:     vi["pageCount"].to_i,
+        cover_url:      (vi["imageLinks"] || {})["thumbnail"],
+        publisher:      vi["publisher"],
+        isbn_10:        isbn10,
+        isbn_13:        isbn13
+      }
+    end
+
+    def digits_or_x(s)
+      s.to_s.gsub(/[^0-9Xx]/, "")
     end
   end
 end

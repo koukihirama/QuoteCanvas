@@ -1,29 +1,56 @@
 class PassagesController < ApplicationController
   before_action :authenticate_user!
-  before_action :set_passage,   only: [ :show, :edit, :update, :destroy ]
-  before_action :ensure_owner!, only: [ :edit, :update, :destroy ]
+  before_action :set_passage,   only: %i[show edit update destroy]
+  before_action :ensure_owner!, only: %i[edit update destroy]
 
   def new
     @passage = current_user.passages.new
-    @passage.build_customization(user: current_user) unless @passage.customization
+    @passage.build_customization unless @passage.customization
+    @passage.build_book_info     unless @passage.book_info
   end
 
   def create
     normalize_nested_keys!
 
-    # update_only 対策：未作成で attrs が来たら build
     @passage = current_user.passages.new
-    @passage.build_customization(user: current_user) if @passage.customization.nil? && params.dig(:passage, :customization_attributes).present?
-    @passage.build_book_info                         if @passage.book_info.nil?       && params.dig(:passage, :book_info_attributes).present?
+    # ★ book_info_attributes が来てたら先に build
+    if @passage.book_info.nil? && params.dig(:passage, :book_info_attributes).present?
+      @passage.build_book_info
+    end
+    if @passage.customization.nil? && params.dig(:passage, :customization_attributes).present?
+      @passage.build_customization(user: current_user)
+    end
 
     @passage.assign_attributes(passage_params)
     @passage.customization&.user ||= current_user
+
+    Rails.logger.info("[passages#create] book_info_attrs=#{params.dig(:passage, :book_info_attributes).inspect}")
 
     if @passage.save
       redirect_to @passage, notice: "カードを保存したよ。"
     else
       flash.now[:alert] = "保存に失敗しちゃった…入力を見直してね。"
       render :new, status: :unprocessable_entity
+    end
+  end
+
+  def update
+    normalize_nested_keys!
+
+    if @passage.book_info.nil? && params.dig(:passage, :book_info_attributes).present?
+      @passage.build_book_info
+    end
+    if @passage.customization.nil? && params.dig(:passage, :customization_attributes).present?
+      @passage.build_customization(user: current_user)
+    end
+
+    Rails.logger.info("[passages#update] book_info_attrs=#{params.dig(:passage, :book_info_attributes).inspect}")
+
+    if @passage.update(passage_params)
+      redirect_to @passage, notice: "カードを更新したよ。"
+    else
+      flash.now[:alert] = "更新に失敗しちゃった…入力を見直してね。"
+      render :edit, status: :unprocessable_entity
     end
   end
 
@@ -36,32 +63,6 @@ class PassagesController < ApplicationController
     }
   end
 
-  def edit
-    @passage.build_customization(user: current_user) unless @passage.customization
-  end
-
-  def update
-  # ここを変更
-  normalize_nested_keys!
-
-  # customization が未作成なら先に build
-  if @passage.customization.nil? && params.dig(:passage, :customization_attributes).present?
-    @passage.build_customization(user: current_user)
-  end
-
-  # book_info が未作成なら先に build  ← 追加
-  if @passage.book_info.nil? && params.dig(:passage, :book_info_attributes).present?
-    @passage.build_book_info
-  end
-
-  if @passage.update(passage_params)
-    redirect_to @passage, notice: "カードを更新したよ。"
-  else
-    flash.now[:alert] = "更新に失敗しちゃった…入力を見直してね。"
-    render :edit, status: :unprocessable_entity
-  end
-end
-
   def destroy
     if @passage.destroy
       redirect_to dashboard_path, notice: "カードを削除しました。"
@@ -73,15 +74,15 @@ end
   private
 
   def set_passage
-    @passage = current_user.passages.find(params[:id])   # ← ここだけ変更
+    @passage = current_user.passages.find(params[:id])
   end
 
   def ensure_owner!
     return if @passage.user_id == current_user.id
-    redirect_to @passage, alert: "これはあなたのカードじゃないみたい…" and return
+    redirect_to @passage, alert: "これはあなたのカードじゃないみたい…"
   end
 
-  # passage[customization] で来ても受けられるように変換
+  # 「passage[book_info]」で来ても受けられるように寄せ替え
   def normalize_nested_keys!
     if (c = params.dig(:passage, :customization)).present? && params.dig(:passage, :customization_attributes).blank?
       params[:passage][:customization_attributes] = c
@@ -92,12 +93,14 @@ end
   end
 
   def passage_params
-    params.require(:passage).permit(
-      :content, :title, :author,
-      :bg_color, :text_color, :font_family,
-      customization_attributes: [ :id, :font, :color, :bg_color ],
-      # ← MVP最小（いまのスキーマに合わせる）
-      book_info_attributes: [ :id, :title, :author, :published_date, :isbn ]
-    )
-  end
+  params.require(:passage).permit(
+    :content, :title, :author,
+    :bg_color, :text_color, :font_family,
+    customization_attributes: [ :id, :font, :color, :bg_color ],
+    book_info_attributes: [
+      :id, :title, :author, :published_date, :isbn,
+      :cover_url, :publisher, :page_count, :source, :source_id
+    ]
+  )
+end
 end
