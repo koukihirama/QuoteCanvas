@@ -3,9 +3,16 @@
 <% style_font = passage.customization&.font.presence       || passage.font_family.presence || "var(--font-serif)" %>
 
 <%= form_with model: passage,
-              local: true,
-              html: { id: "passage-form", autocomplete: "off" },
-              class: "space-y-6" do |f| %>
+      local: true,
+      html: {
+        id: "passage-form",
+        autocomplete: "off",
+        data: {
+          controller: "book-search",
+          action: "submit->book-search#mirrorToHidden turbo:submit-start->book-search#mirrorToHidden"
+        }
+      },
+      class: "space-y-6" do |f| %>
 
   <% if passage.errors.any? %>
     <div class="alert alert-error">
@@ -21,6 +28,7 @@
   <%# ====== 2カラム（md以上で分割 / スマホは1カラム） ====== %>
   <div class="grid gap-6 md:grid-cols-2 items-start">
     <%# ================= 左：入力カラム ================= %>
+    <%# ↓ このブロックに book-search コントローラを掛ける %>
     <div class="space-y-6">
 
       <!-- 本文 -->
@@ -31,21 +39,60 @@
               data: { preview_target: "content" } %>
       </div>
 
-      <!-- タイトル / 著者 -->
+      <!-- タイトル / 著者（入力で自動候補を出す） -->
       <div class="grid gap-4 md:grid-cols-2">
         <div>
           <%= f.label :title, "作品タイトル", class: "block font-semibold mb-1" %>
           <%= f.text_field :title,
                 class: "input input-bordered w-full",
-                data: { preview_target: "title" } %>
+                data: {
+                  preview_target: "title",
+                  action: "input->book-search#trySuggest",
+                  "book-search-target": "title"
+                } %>
         </div>
         <div>
           <%= f.label :author, "著者", class: "block font-semibold mb-1" %>
           <%= f.text_field :author,
                 class: "input input-bordered w-full",
-                data: { preview_target: "author" } %>
+                data: {
+                  preview_target: "author",
+                  action: "input->book-search#trySuggest",
+                  "book-search-target": "author"
+                } %>
         </div>
       </div>
+
+      <!-- 書籍検索アクション（モーダル／クリア）＋ ISBN 直入力（任意） -->
+      <div class="flex flex-col gap-2">
+        <div class="flex gap-2">
+          <button type="button"
+                  class="btn btn-outline btn-sm"
+                  data-action="click->book-search#open">
+            🔎 書籍を検索してセット
+          </button>
+          <button type="button"
+                  class="btn btn-ghost btn-sm"
+                  data-action="click->book-search#clear">
+            クリア
+          </button>
+        </div>
+
+        <%# BookInfo 側の ISBN を“検索兼ねる入力”として露出（任意） %>
+        <div class="max-w-xs">
+          <label class="label"><span class="label-text text-xs">ISBN（任意。入力で候補表示）</span></label>
+          <%= f.fields_for :book_info do |bf| %>
+            <%= bf.text_field :isbn,
+                  class: "input input-bordered w-full",
+                  placeholder: "9784041026229",
+                  data: { action: "input->book-search#trySuggest",
+                          "book-search-target": "isbn" } %>
+          <% end %>
+        </div>
+      </div>
+
+      <%# インライン候補の表示エリア（クリックでセット） %>
+      <div class="mt-2" data-book-search-target="inlineResults"></div>
 
       <!-- 見た目のカスタマイズ（簡易） -->
       <details class="collapse collapse-arrow bg-base-200 mt-2">
@@ -136,6 +183,20 @@
         </div>
       </details>
 
+      <!-- BookInfo（保存用 hidden と公開したい項目） -->
+      <%= f.fields_for :book_info do |bf| %>
+  <%= bf.hidden_field :id if bf.object&.persisted? %>  <!-- これを追加 -->
+
+  <%= bf.hidden_field :title,          data: { "book-search-target": "title" } %>
+  <%= bf.hidden_field :author,         data: { "book-search-target": "author" } %>
+  <%= bf.hidden_field :published_date, data: { "book-search-target": "publishedDate" } %>
+  <%= bf.hidden_field :cover_url,      data: { "book-search-target": "coverUrl" } %>
+  <%= bf.hidden_field :publisher,      data: { "book-search-target": "publisher" } %>
+  <%= bf.hidden_field :page_count,     data: { "book-search-target": "pageCount" } %>
+  <%= bf.hidden_field :source,         data: { "book-search-target": "source" } %>
+  <%= bf.hidden_field :source_id,      data: { "book-search-target": "sourceId" } %>
+<% end %>
+
       <!-- 詳細設定ページへの導線 -->
       <div class="mt-2">
         <% if passage.persisted? %>
@@ -204,6 +265,28 @@
 </div>
 <%# モバイルで固定バーに隠れないよう余白を確保 %>
 <div class="h-28 md:hidden"></div>
+
+<%# ================= 書籍検索モーダル（必要なら使う） ================= %>
+<dialog id="book-search-modal" class="modal">
+  <div class="modal-box max-w-3xl">
+    <h3 class="font-bold text-lg mb-4">書籍検索</h3>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-2 mb-3">
+      <input type="text" placeholder="タイトル" class="input input-bordered w-full" data-book-search-target="qTitle">
+      <input type="text" placeholder="著者"     class="input input-bordered w-full" data-book-search-target="qAuthor">
+      <input type="text" placeholder="ISBN"     class="input input-bordered w-full" data-book-search-target="qIsbn">
+    </div>
+    <div class="flex gap-2 mb-4">
+      <button class="btn btn-primary btn-sm" data-action="click->book-search#search">検索</button>
+      <button class="btn btn-ghost btn-sm"   data-action="click->book-search#close">閉じる</button>
+    </div>
+    <div class="overflow-y-auto max-h-[45vh]">
+      <ul class="menu w-full" data-book-search-target="results"></ul>
+    </div>
+  </div>
+  <form method="dialog" class="modal-backdrop" data-action="click->book-search#close">
+    <button>close</button>
+  </form>
+</dialog>
 
 <%# ================= プレビュー反映スクリプト（PC/モバイル対応） ================= %>
 <script>
