@@ -1,0 +1,19 @@
+<% if notice.present? || alert.present? %>
+  <div data-controller="flash" class="space-y-2 mb-4">
+    <% if notice.present? %>
+      <div class="alert alert-info shadow-sm animate-fade-in" data-flash-target="item" role="status">
+        <div class="flex-1"><%= notice %></div>
+        <button type="button" class="btn btn-sm" data-action="click->flash#dismiss">OK</button>
+      </div>
+    <% end %>
+    <% if alert.present? %>
+      <div class="alert alert-error shadow-sm animate-fade-in" data-flash-target="item" role="alert">
+        <div class="flex-1"><%= alert %></div>
+        <button type="button" class="btn btn-sm" data-action="click->flash#dismiss">閉じる</button>
+      </div>
+    <% end %>
+  </div>
+<% else %>
+  <!-- 高さ確保でガタつき防止 -->
+  <div class="min-h-6"></div>
+<% end %>

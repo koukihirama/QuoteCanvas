@@ -1,0 +1,14 @@
+<div data-controller="welcome" data-welcome-key-value="qc:onboarded_v1"
+     class="hidden">
+  <div class="mx-auto max-w-7xl px-4 md:px-8">
+    <div class="rounded-2xl gh-glass p-4 mt-4 flex items-center justify-between gap-3">
+      <div class="text-sm">
+        はじめまして！まずは <%= link_to "使い方", guide_path, class: "link link-primary" %> をチェックしませんか？
+      </div>
+      <div class="flex gap-2 shrink-0">
+        <%= link_to "詳しく見る", guide_path, class: "btn btn-sm btn-primary" %>
+        <button type="button" class="btn btn-sm" data-action="click->welcome#dismiss">閉じる</button>
+      </div>
+    </div>
+  </div>
+</div>

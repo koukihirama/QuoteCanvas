@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  get "static/guide"
   devise_for :users
 
   # ヘルス/PWA
@@ -12,6 +13,7 @@ Rails.application.routes.draw do
   get "profile",   to: "users#show", as: :profile
 
   get "books/lookup", to: "books#lookup"
+  get "/guide", to: "static#guide", as: :guide
 
   # 書籍検索フォーム画面
   resources :book_infos, only: [] do
