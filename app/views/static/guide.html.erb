@@ -1,0 +1,35 @@
+<div class="container mx-auto max-w-3xl px-4 md:px-8 py-10">
+  <h1 class="text-2xl md:text-3xl font-extrabold gh-underline">使い方</h1>
+  <p class="mt-2 opacity-80">
+    好きな一文を、<span class="font-semibold">小さなカード</span>として残すだけ。あとで眺めて、また好きになる。
+  </p>
+
+  <ol class="mt-6 space-y-4 list-decimal pl-6">
+    <li>
+      <span class="font-semibold">「＋ 一節を記録」</span>を押して本文を貼り付ける<br>
+      タイトル・著者は任意。まずは一文だけでも OK。
+    </li>
+    <li>
+      <span class="font-semibold">書誌をワンタップで反映</span><br>
+      「書籍を検索してセット」から <span class="opacity-80">タイトル／著者／ISBN</span> のどれかで検索。
+    </li>
+    <li>
+      <span class="font-semibold">彩って保存</span><br>
+      背景・文字色・フォントを選ぶと、リアルタイムのプレビューで雰囲気を確認できます。
+    </li>
+  </ol>
+
+  <div class="mt-6 rounded-2xl gh-glass p-5">
+    <div class="font-semibold mb-2">コツ</div>
+    <ul class="list-disc pl-6 space-y-1 text-sm opacity-80">
+      <li>迷ったら本文だけ保存 → あとから書誌や色を足せます。</li>
+      <li>ISBN が分かれば最短で正確にヒットします（ハイフンなしで OK）。</li>
+      <li>一覧から同じスタイルでまとめて眺めるのも気持ちいいです。</li>
+    </ul>
+  </div>
+
+  <div class="mt-6 flex flex-wrap gap-3">
+    <%= link_to "＋ 一節を記録", new_passage_path, class: "btn btn-primary" %>
+    <%= link_to "ダッシュボードへ", dashboard_path, class: "btn btn-ghost" %>
+  </div>
+</div>
