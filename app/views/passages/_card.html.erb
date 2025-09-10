@@ -1,0 +1,43 @@
+<%# locals: passage:, size: :mini | :compact | :normal %>
+<% s = (size || :mini).to_sym %>
+<% preset = {
+  mini:    { pad:'p-3', gap:'gap-2', cover:'w-10 h-14', body_pad:'p-2', font:'text-[13px]', clamp:2, radius:'rounded-xl' },
+  compact: { pad:'p-3', gap:'gap-2', cover:'w-12 h-16', body_pad:'p-2', font:'text-[13px]', clamp:3, radius:'rounded-xl' },
+  normal:  { pad:'p-4', gap:'gap-3', cover:'w-14 h-20', body_pad:'p-3', font:'text-sm',     clamp:5, radius:'rounded-2xl' }
+}[s] %>
+
+<% style = {
+  bg:   passage.customization&.bg_color.presence || passage.bg_color.presence    || "#F9FAFB",
+  text: passage.customization&.color.presence    || passage.text_color.presence  || "#111827",
+  font: passage.customization&.font.presence     || passage.font_family.presence || "var(--font-serif)"
+} %>
+
+<article class="gh-glass hover-float <%= preset[:radius] %> <%= preset[:pad] %> flex <%= preset[:gap] %>">
+  <% if passage.book_info&.cover_url.present? %>
+    <img src="<%= passage.book_info.cover_url %>" alt="" class="<%= preset[:cover] %> object-cover rounded shrink-0">
+  <% end %>
+
+  <div class="min-w-0 flex-1">
+    <div class="text-[11px] opacity-70 mb-1">
+      <%= [passage.author.presence, passage.title.presence&.yield_self { |t| "『#{t}』" }].compact.join(" ") %>
+    </div>
+
+    <%= link_to passage_path(passage), class: "block" do %>
+      <div class="relative border <%= preset[:radius] %> <%= preset[:body_pad] %>"
+           style="background:<%= style[:bg] %>; color:<%= style[:text] %>; font-family:<%= style[:font] %>;">
+        <div class="absolute inset-0 gh-grain pointer-events-none <%= preset[:radius] %>"></div>
+        <div class="<%= preset[:font] %> font-semibold leading-snug line-clamp-<%= preset[:clamp] %>">
+          <%= h(passage.content.to_s) %>
+        </div>
+      </div>
+    <% end %>
+
+    <div class="mt-2 flex items-center justify-between text-[11px] opacity-70">
+      <time datetime="<%= passage.created_at.iso8601 %>"><%= l passage.created_at, format: :long %></time>
+      <div class="flex gap-2">
+        <%= link_to "詳細", passage_path(passage), class: "link link-primary" %>
+        <%= link_to "編集", edit_passage_path(passage), class: "link" %>
+      </div>
+    </div>
+  </div>
+</article>

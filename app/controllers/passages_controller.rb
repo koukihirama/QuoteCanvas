@@ -3,6 +3,12 @@ class PassagesController < ApplicationController
   before_action :set_passage,   only: %i[show edit update destroy]
   before_action :ensure_owner!, only: %i[edit update destroy]
 
+  def index
+    @passages = current_user.passages
+                  .includes(:book_info, :customization)
+                  .order(created_at: :desc)
+  end
+
   def new
     @passage = current_user.passages.new
     @passage.build_customization unless @passage.customization
