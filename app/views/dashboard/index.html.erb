@@ -64,23 +64,23 @@
     </div>
 
     <% if @recent_passages.any? %>
-      <div class="mt-5 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-        <% @recent_passages.each do |p| %>
-          <%= render "dashboard/passage_card", passage: p %>
-        <% end %>
-      </div>
-    <% else %>
-      <div class="mt-6 rounded-3xl gh-glass p-10 text-center hover-float">
-        <div class="text-4xl mb-2">🌿</div>
-        <p class="font-semibold">まだカードがありません</p>
-        <p class="opacity-70 text-sm mt-1">心に残った一文を、最初の1枚に。</p>
-        <div class="mt-4">
-          <%= link_to (defined?(new_passage_path) ? new_passage_path : "#"), class: "btn btn-primary breeze" do %>
-            ＋ 一節を記録
-          <% end %>
-        </div>
-      </div>
+  <div class="mt-5 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+    <% @recent_passages.each do |p| %>
+      <%= render "passages/card", passage: p, size: :mini %>
     <% end %>
+  </div>
+<% else %>
+  <div class="mt-6 rounded-3xl gh-glass p-10 text-center hover-float">
+    <div class="text-4xl mb-2">🌿</div>
+    <p class="font-semibold">まだカードがありません</p>
+    <p class="opacity-70 text-sm mt-1">心に残った一文を、最初の1枚に。</p>
+    <div class="mt-4">
+      <%= link_to (defined?(new_passage_path) ? new_passage_path : "#"), class: "btn btn-primary breeze" do %>
+        ＋ 一節を記録
+      <% end %>
+    </div>
+  </div>
+<% end %>
   </section>
 
   <!-- ショートガイド：森の黒板っぽく -->

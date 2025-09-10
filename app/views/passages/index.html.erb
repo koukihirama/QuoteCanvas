@@ -1,0 +1,63 @@
+<!-- 背景：空＋丘＋粒子（お好みで） -->
+<div class="fixed inset-0 -z-10 gh-sky">
+  <div class="absolute inset-0 gh-hills opacity-70"></div>
+  <div class="absolute inset-0 gh-grain pointer-events-none"></div>
+</div>
+
+<div class="container mx-auto max-w-7xl px-4 md:px-8 py-8 md:py-12">
+  <div class="mb-6 flex items-end justify-between">
+    <div>
+      <h1 class="text-2xl md:text-3xl font-bold gh-underline">一節一覧</h1>
+      <p class="opacity-70 text-sm mt-1"><%= @passages.size %> 件</p>
+    </div>
+    <%= link_to "＋ 新規作成", new_passage_path, class: "btn btn-primary btn-press" %>
+  </div>
+
+  <% if @passages.blank? %>
+    <div class="rounded-2xl gh-glass p-8 text-center">
+      <p class="font-semibold">まだ一節はありません</p>
+      <p class="opacity-70 text-sm mt-1">まずは最初の一節を作ってみよう。</p>
+      <div class="mt-4">
+        <%= link_to "＋ 一節を作成", new_passage_path, class: "btn btn-outline btn-press" %>
+      </div>
+    </div>
+  <% else %>
+    <div class="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+      <% @passages.each do |p| %>
+        <% style = {
+             bg:   p.customization&.bg_color.presence || p.bg_color.presence    || "#F9FAFB",
+             text: p.customization&.color.presence    || p.text_color.presence  || "#111827",
+             font: p.customization&.font.presence     || p.font_family.presence || "var(--font-serif)"
+           } %>
+
+        <article class="rounded-2xl gh-glass p-4 hover-float flex gap-3">
+          <% if p.book_info&.cover_url.present? %>
+            <img src="<%= p.book_info.cover_url %>" alt="" class="w-14 h-20 object-cover rounded shrink-0">
+          <% end %>
+
+          <div class="min-w-0 flex-1">
+            <div class="text-xs opacity-70 mb-1">
+              <%= [p.author.presence, p.title.presence&.yield_self { |t| "『#{t}』" }].compact.join(" ") %>
+            </div>
+
+            <div class="relative rounded-xl p-3 border"
+                 style="background:<%= style[:bg] %>; color:<%= style[:text] %>; font-family:<%= style[:font] %>;">
+              <div class="absolute inset-0 gh-grain pointer-events-none rounded-xl"></div>
+              <div class="text-sm font-semibold leading-relaxed">
+                <%= h(p.content.to_s).truncate(120) %>
+              </div>
+            </div>
+
+            <div class="mt-2 flex items-center justify-between text-xs opacity-70">
+              <time datetime="<%= p.created_at.iso8601 %>"><%= l p.created_at, format: :long %></time>
+              <div class="flex gap-2">
+                <%= link_to "詳細", passage_path(p), class: "link link-primary" %>
+                <%= link_to "編集", edit_passage_path(p), class: "link" %>
+              </div>
+            </div>
+          </div>
+        </article>
+      <% end %>
+    </div>
+  <% end %>
+</div>

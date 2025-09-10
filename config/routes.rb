@@ -26,7 +26,7 @@ Rails.application.routes.draw do
   end
 
   # passages
-  resources :passages, only: [ :new, :create, :show, :edit, :update, :destroy ] do
+  resources :passages, only: [ :index, :new, :create, :show, :edit, :update, :destroy ] do
     resources :thought_logs, only: [ :new, :create ]
     resource  :customization, only: [ :new, :create, :edit, :update ],
               controller: "passage_customizations"
