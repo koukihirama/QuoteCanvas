@@ -22,11 +22,25 @@ export default class extends Controller {
     if (this._abortCtrl) this._abortCtrl.abort();
   }
 
+  // 先頭のターゲットを安全に取る＆値を読む
+  firstTarget(name) {
+    const arr = this[`${name}Targets`] || [];
+    return arr.length ? arr[0] : null;
+  }
+  readValue(name) {
+    const el = this.firstTarget(name);
+    return (el?.value || "").trim();
+  }
+
   // ===== モーダル =====
   open() {
-    if (this.hasQTitleTarget && this.hasTitleTarget)  this.qTitleTarget.value = this.titleTarget.value || "";
-    if (this.hasQAuthorTarget && this.hasAuthorTarget) this.qAuthorTarget.value = this.authorTarget.value || "";
-    if (this.hasQIsbnTarget   && this.hasIsbnTarget)   this.qIsbnTarget.value   = this.isbnTarget.value || "";
+    const curTitle  = this.readValue("title");
+    const curAuthor = this.readValue("author");
+    const curIsbn   = this.readValue("isbn");
+
+    if (this.hasQTitleTarget)  this.qTitleTarget.value  = curTitle || "";
+    if (this.hasQAuthorTarget) this.qAuthorTarget.value = curAuthor || "";
+    if (this.hasQIsbnTarget)   this.qIsbnTarget.value   = curIsbn || "";
 
     const dlg = document.getElementById("book-search-modal");
     if (dlg && typeof dlg.showModal === "function") {
@@ -61,9 +75,9 @@ export default class extends Controller {
   }
 
   async suggest() {
-    const title  = this.hasTitleTarget  ? this.titleTarget.value.trim() : "";
-    const author = this.hasAuthorTarget ? this.authorTarget.value.trim() : "";
-    const isbn   = this.hasIsbnTarget   ? this.isbnTarget.value.replaceAll("-", "").trim() : "";
+    const title  = this.readValue("title");
+    const author = this.readValue("author");
+    const isbn   = this.readValue("isbn").replaceAll("-", "");
 
     const ok = (isbn && isbn.length >= 10) || (title.length >= 2) || (author.length >= 2);
     if (!ok) { this.renderInlineResults([]); return; }
@@ -225,22 +239,21 @@ export default class extends Controller {
 
   // ===== 送信直前の保険（候補未クリックでも最小限コピー）
   mirrorToHidden() {
-  // コントローラが載っているのは <form> なので this.element が form
-  const form = this.element;
+    const form = this.element; // このコントローラは <form> に付いている想定
 
-  // 可視のタイトル/著者
-  const vTitle  = form.querySelector('input[name="passage[title]"]')?.value || "";
-  const vAuthor = form.querySelector('input[name="passage[author]"]')?.value || "";
+    // 可視のタイトル/著者
+    const vTitle  = form.querySelector('input[name="passage[title]"]')?.value || "";
+    const vAuthor = form.querySelector('input[name="passage[author]"]')?.value || "";
 
-  // 可視の ISBN（book_info の可視テキスト）
-  const vIsbnEl = form.querySelector('input[name="passage[book_info_attributes][isbn]"], input[data-book-search-target="isbn"]');
-  const vIsbn   = (vIsbnEl?.value || "").replaceAll("-", "");
+    // 可視の ISBN（book_info の可視テキスト）
+    const vIsbnEl = form.querySelector('input[name="passage[book_info_attributes][isbn]"], input[data-book-search-target="isbn"]');
+    const vIsbn   = (vIsbnEl?.value || "").replaceAll("-", "");
 
-  // 同名ターゲット（hidden + 可視の両方）に流し込む
-  this.setField("title",  vTitle);
-  this.setField("author", vAuthor);
-  this.setField("isbn",   vIsbn);
-}
+    // 同名ターゲット（hidden + 可視の両方）に流し込む
+    this.setField("title",  vTitle);
+    this.setField("author", vAuthor);
+    this.setField("isbn",   vIsbn);
+  }
 
   fillFromSession() {
     const raw = sessionStorage.getItem("qc:book_selection");
@@ -264,19 +277,29 @@ export default class extends Controller {
     }
   }
 
-  // ===== 共通：同名ターゲット（visible + hidden）全部に値を流す
+  // ===== 共通：同名ターゲット（visible + hidden）全部に値を流す（変更検知イベント発火つき）
   setField(name, value) {
+    const fire = (el) => {
+      if (!el) return;
+      const before = el.value;
+      el.value = value ?? "";
+      if (el.value !== before) {
+        el.dispatchEvent(new Event("input",  { bubbles: true }));
+        el.dispatchEvent(new Event("change", { bubbles: true }));
+      }
+    };
+
     const list = this[`${name}Targets`];
     if (Array.isArray(list) && list.length) {
-      list.forEach(el => { if (el) el.value = value ?? ""; });
+      list.forEach(fire);
     } else {
       const cap = name[0].toUpperCase() + name.slice(1);
-      if (this[`has${cap}Target`]) this[`${name}Target`].value = value ?? "";
+      if (this[`has${cap}Target`]) fire(this[`${name}Target`]);
     }
   }
 }
 
-// ===== util
+// ===== util（クラス外）
 function normalizeDate(s) {
   if (!s) return "";
   const parts = String(s).split("-").map(x => x.trim());

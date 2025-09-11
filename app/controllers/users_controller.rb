@@ -6,4 +6,9 @@ class UsersController < ApplicationController
     @passages_count = @user.passages.count
     @recent_passages = @user.passages.order(created_at: :desc).limit(12)
   end
+
+  def hide_guide
+    current_user.update!(show_guide: false)
+    head :ok
+  end
 end

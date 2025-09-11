@@ -48,5 +48,8 @@
     </main>
 
     <%= render "shared/footer" %>
+    <% if user_signed_in? && current_user.show_guide? %>
+      <%= render "shared/onboarding_modal" %>
+    <% end %>
   </body>
 </html>

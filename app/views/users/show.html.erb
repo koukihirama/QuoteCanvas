@@ -64,7 +64,7 @@
     <% if @recent_passages.any? %>
       <div class="mt-5 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
         <% @recent_passages.each do |p| %>
-          <%= render "dashboard/passage_card", passage: p %>
+          <%= render "passages/card", passage: p, size: :mini %>
         <% end %>
       </div>
     <% else %>

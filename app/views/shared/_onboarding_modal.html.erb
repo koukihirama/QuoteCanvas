@@ -1,0 +1,28 @@
+<dialog id="onboarding-modal"
+        class="modal"
+        data-controller="onboarding"
+        data-onboarding-hide-url-value="/users/hide_guide">
+  <div class="modal-box max-w-lg">
+    <h3 class="font-bold text-xl mb-3">ようこそ 👋</h3>
+    <p class="opacity-80 text-sm">
+      QuoteCanvasは、心に刺さった<b>一節</b>をカードとして記録・カスタマイズできるアプリです。
+    </p>
+
+    <ol class="list-decimal pl-5 space-y-2 mt-4 text-sm">
+      <li>「＋ 一節を記録」から本文・著者・タイトルを入力</li>
+      <li>必要なら「書籍を検索してセット」で書誌情報を反映</li>
+      <li>背景・文字色・フォントを自分らしく整えて保存</li>
+    </ol>
+
+    <div class="mt-5 flex flex-wrap gap-2 justify-end">
+      <%= link_to "詳しい使い方を見る", guide_path, class: "btn btn-ghost btn-sm" %>
+      <!-- ここを Stimulus のアクションに -->
+      <button type="button"
+              class="btn btn-primary btn-sm"
+              data-action="onboarding#hide">
+        はじめる
+      </button>
+    </div>
+  </div>
+  <form method="dialog" class="modal-backdrop"><button>close</button></form>
+</dialog>

@@ -14,6 +14,7 @@ Rails.application.routes.draw do
 
   get "books/lookup", to: "books#lookup"
   get "/guide", to: "static#guide", as: :guide
+  patch "users/hide_guide", to: "users#hide_guide"
 
   # 書籍検索フォーム画面
   resources :book_infos, only: [] do
