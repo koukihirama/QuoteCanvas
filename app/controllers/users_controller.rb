@@ -11,5 +11,4 @@ class UsersController < ApplicationController
     current_user.update!(show_guide: false)
     head :ok
   end
-
 end
