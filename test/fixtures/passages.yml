@@ -1,11 +1,15 @@
 one:
-  content: "fixtureで登録したテストの一節"
-  title: "テストタイトル"
-  author: "テスト著者"
-  user: one
+  user: alice
+  title: "サンプルの一節"
+  author: "作者A"
+  content: "本文A"
+  created_at: <%= Time.current %>
+  updated_at: <%= Time.current %>
 
 two:
-  content: "もう一つの一節"
-  title: "別のタイトル"
-  author: "誰か"
-  user: one
+  user: bob
+  title: "別サンプル"
+  author: "作者B"
+  content: "本文B"
+  created_at: <%= Time.current %>
+  updated_at: <%= Time.current %>

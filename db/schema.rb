@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_09_11_053336) do
+ActiveRecord::Schema[7.2].define(version: 2025_09_11_081828) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -27,7 +27,7 @@ ActiveRecord::Schema[7.2].define(version: 2025_09_11_053336) do
     t.string "source_id"
     t.integer "page_count"
     t.string "publisher"
-    t.index ["passage_id"], name: "index_book_infos_on_passage_id"
+    t.index ["passage_id"], name: "index_book_infos_on_passage_id", unique: true
   end
 
   create_table "passage_customizations", force: :cascade do |t|
@@ -50,8 +50,9 @@ ActiveRecord::Schema[7.2].define(version: 2025_09_11_053336) do
     t.string "bg_color"
     t.string "text_color"
     t.string "font_family"
-    t.bigint "user_id"
+    t.bigint "user_id", null: false
     t.text "content"
+    t.index ["user_id", "created_at"], name: "index_passages_on_user_id_and_created_at"
     t.index ["user_id"], name: "index_passages_on_user_id"
   end
 
@@ -60,7 +61,9 @@ ActiveRecord::Schema[7.2].define(version: 2025_09_11_053336) do
     t.bigint "passage_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
     t.index ["passage_id"], name: "index_thought_logs_on_passage_id"
+    t.index ["user_id"], name: "index_thought_logs_on_user_id"
   end
 
   create_table "users", force: :cascade do |t|
@@ -87,4 +90,5 @@ ActiveRecord::Schema[7.2].define(version: 2025_09_11_053336) do
   add_foreign_key "passage_customizations", "users"
   add_foreign_key "passages", "users"
   add_foreign_key "thought_logs", "passages"
+  add_foreign_key "thought_logs", "users"
 end

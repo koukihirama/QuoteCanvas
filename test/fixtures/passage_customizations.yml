@@ -1,15 +1,13 @@
-# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
-
 one:
-  font: MyString
-  color: MyString
-  bg_color: MyString
   passage: one
-  user: one
+  user: alice
+  font: "var(--font-serif)"
+  color: "#111827"
+  bg_color: "#F9FAFB"
 
 two:
-  font: MyString
-  color: MyString
-  bg_color: MyString
   passage: two
-  user: two
+  user: bob
+  font: "var(--font-sans)"
+  color: "#111827"
+  bg_color: "#F3F4F6"

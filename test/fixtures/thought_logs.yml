@@ -1,9 +1,13 @@
-# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
-
 one:
-  content: MyText
   passage: one
+  user: alice
+  content: "MyText"
+  created_at: <%= Time.current %>
+  updated_at: <%= Time.current %>
 
 two:
-  content: MyText
   passage: two
+  user: bob
+  content: "Another memo"
+  created_at: <%= Time.current %>
+  updated_at: <%= Time.current %>
