@@ -7,9 +7,9 @@ class ThoughtLogsController < ApplicationController
   end
 
   def create
-    @thought_log = @passage.thought_logs.new(thought_log_params)
+    @thought_log = @passage.thought_logs.build(thought_log_params.merge(user: current_user))
     if @thought_log.save
-      redirect_to passage_path(@passage), notice: "思考ログを保存したよ。"
+      redirect_to @passage, notice: "思考ログを保存したよ。"
     else
       flash.now[:alert] = "保存に失敗しちゃった…入力を見直してね。"
       render :new, status: :unprocessable_entity
@@ -19,7 +19,9 @@ class ThoughtLogsController < ApplicationController
   private
 
   def set_passage
-    @passage = Passage.find(params[:passage_id])
+    @passage = current_user.passages.find(params[:passage_id])
+  rescue ActiveRecord::RecordNotFound
+    redirect_to dashboard_path, alert: "このカードは見つからないか、あなたのものではありません。"
   end
 
   def thought_log_params
