@@ -24,12 +24,16 @@
           <%= link_to (defined?(new_passage_path) ? new_passage_path : "#"), class: "btn btn-primary breeze" do %>
             ＋ 一節を記録
           <% end %>
+
           <%= link_to (defined?(passages_path) ? passages_path : "#"), class: "btn btn-outline hover-float" do %>
             一覧を見る
           <% end %>
-          <%= link_to edit_user_registration_path, class: "btn btn-ghost hover-float" do %>
-            プロフィール
-          <% end %>
+
+          <!-- プロフィールは閲覧ページへ -->
+          <%= link_to "プロフィール", user_path(current_user), class: "btn btn-ghost hover-float" %>
+
+          <!-- 設定は別ボタンで -->
+          <%= link_to "アカウント設定", edit_user_registration_path, class: "btn btn-outline hover-float" %>
         </div>
       </div>
     </div>
@@ -83,7 +87,6 @@
 <% end %>
   </section>
 
-  <!-- ショートガイド：森の黒板っぽく -->
   <section class="mt-10 grid gap-4 md:grid-cols-3">
     <div class="rounded-2xl gh-glass p-6 hover-float">
       <div class="text-2xl">✍️</div>

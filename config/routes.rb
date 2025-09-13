@@ -16,6 +16,8 @@ Rails.application.routes.draw do
   get "/guide", to: "static#guide", as: :guide
   patch "users/hide_guide", to: "users#hide_guide"
 
+  resources :users, only: [ :show ]
+
   # 書籍検索フォーム画面
   resources :book_infos, only: [] do
     collection do
@@ -30,7 +32,7 @@ Rails.application.routes.draw do
 
   # passages
   resources :passages, only: [ :index, :new, :create, :show, :edit, :update, :destroy ] do
-    resources :thought_logs, only: [ :new, :create ]
+    resources :thought_logs, only: [ :new, :create, :destroy ]
     resource  :customization, only: [ :new, :create, :edit, :update ],
               controller: "passage_customizations"
   end
