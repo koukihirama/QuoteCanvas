@@ -34,7 +34,7 @@
         <% end %>
 
         <div class="text-lg md:text-2xl font-semibold leading-relaxed">
-          <%= simple_format(h(@passage.content)) %>
+          <%= simple_format(h(@passage.content), { class: "m-0" }, wrapper_tag: "div") %>
         </div>
       </div>
 
@@ -228,19 +228,25 @@
           </div>
 
           <% if @thought_logs.present? %>
-            <div class="mt-4 space-y-3">
-              <% @thought_logs.each do |log| %>
-                <article class="rounded-2xl gh-glass p-4 hover-float">
-                  <div class="flex items-center justify-between text-xs opacity-70 mb-2">
-                    <span>記録日時</span>
-                    <time datetime="<%= log.created_at.iso8601 %>"><%= l log.created_at, format: :long %></time>
-                  </div>
-                  <div class="leading-relaxed text-sm whitespace-pre-wrap">
-                    <%= h(log.content) %>
-                  </div>
-                </article>
-              <% end %>
-            </div>
+  <div class="mt-4 space-y-3">
+    <% @thought_logs.each do |log| %>
+      <article id="<%= dom_id(log) %>" class="rounded-2xl gh-glass p-4 hover-float">
+        <div class="flex items-center justify-between text-xs opacity-70 mb-2">
+          <span>記録日時</span>
+          <div class="flex items-center gap-2">
+            <time datetime="<%= log.created_at.iso8601 %>"><%= l log.created_at, format: :long %></time>
+            <% if user_signed_in? && @passage.user_id == current_user.id %>
+              <%= link_to "削除",
+                    passage_thought_log_path(@passage, log),
+                    data: { turbo_method: :delete, turbo_confirm: "このログを削除します。よろしいですか？" },
+                    class: "link link-error text-[11px]" %>
+            <% end %>
+          </div>
+        </div>
+        <div class="leading-relaxed text-sm whitespace-pre-wrap"><%= h(log.content) %></div>
+      </article>
+    <% end %>
+  </div>
           <% else %>
             <div class="mt-4 rounded-2xl gh-glass p-6 text-center hover-float">
               <p class="font-semibold">まだ思考ログはありません</p>

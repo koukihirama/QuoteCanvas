@@ -4,7 +4,11 @@ class UsersController < ApplicationController
   def show
     @user = current_user
     @passages_count = @user.passages.count
-    @recent_passages = @user.passages.order(created_at: :desc).limit(12)
+    @recent_passages =
+      @user.passages
+           .includes(:customization, :book_info) # ★ 追加
+           .order(created_at: :desc)
+           .limit(12)
   end
 
   def hide_guide
