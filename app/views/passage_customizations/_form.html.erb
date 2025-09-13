@@ -1,5 +1,3 @@
-<%# locals: customization:, passage:, url:, submit_label:, fallback: { bg:, text:, font: } %>
-
 <%= form_with model: customization,
               url: url,
               local: true,
@@ -20,7 +18,7 @@
   <% end %>
 
   <div class="grid gap-6 md:grid-cols-2 items-start">
-    <!-- ① SPではプレビュー先頭 / md以上は右側に固定 -->
+    <!-- ① プレビュー（SP先頭 / md以上は右固定） -->
     <div class="order-1 md:order-2 md:sticky md:top-24">
       <div id="preview-card"
            class="relative rounded-2xl p-6 border card-lift"
@@ -42,7 +40,7 @@
       </div>
     </div>
 
-    <!-- ② 入力（SPでは後ろ / md以上は左） -->
+    <!-- ② 入力（SP後ろ / md以上は左） -->
     <div class="order-2 md:order-1 space-y-5">
       <!-- フォント -->
       <div>
@@ -69,16 +67,16 @@
             f: f,
             field: :color,
             label: "文字色",
-            picker_key: "textColor",
-            default_color: customization.color.presence || fallback[:text] %>
+            key: "textColor",
+            default_color: (customization.color.presence || fallback[:text]) %>
 
       <!-- 背景色 -->
       <%= render "passage_customizations/color_field_with_palette",
             f: f,
             field: :bg_color,
             label: "背景色",
-            picker_key: "bgColor",
-            default_color: customization.bg_color.presence || fallback[:bg] %>
+            key: "bgColor",
+            default_color: (customization.bg_color.presence || fallback[:bg]) %>
 
       <div class="flex gap-2">
         <%= f.submit submit_label, class: "btn btn-primary" %>
@@ -95,17 +93,15 @@
   👁 プレビュー
 </button>
 
-<!-- ④ 最小JS：双方向バインド + 初期反映 + FAB表示制御 -->
+<!-- ④ 最小JS：プレビュー即時反映（Stimulus連携を前提に超軽量） -->
 <script>
 (() => {
-  const root = document.currentScript.closest(".rounded-3xl") || document;
-  const card = root.querySelector("#preview-card");
-  const fontSel = root.querySelector('[data-preview-target="font"]');
-  const textInp = root.querySelector('[data-preview-target="textColor"]');
-  const bgInp   = root.querySelector('[data-preview-target="bgColor"]');
-  const textPick= root.querySelector('input[data-colorpicker="textColor"]');
-  const bgPick  = root.querySelector('input[data-colorpicker="bgColor"]');
-  const fab     = root.querySelector("#jump-preview");
+  const root  = document.currentScript.closest("body") || document;
+  const card  = root.querySelector("#preview-card");
+  const font  = root.querySelector('[data-preview-target="font"]');
+  const textI = root.querySelector('[data-preview-target="textColor"]');
+  const bgI   = root.querySelector('[data-preview-target="bgColor"]');
+  const fab   = root.querySelector("#jump-preview");
 
   const FALLBACK = {
     font: card?.dataset.fallbackFont || "var(--font-serif)",
@@ -114,51 +110,40 @@
   };
 
   const apply = () => {
-    if (card) {
-      card.style.fontFamily = (fontSel?.value?.trim() || FALLBACK.font);
-      card.style.color      = (textInp?.value?.trim() || FALLBACK.text);
-      card.style.background = (bgInp  ?.value?.trim() || FALLBACK.bg);
-    }
-    // バッジ更新（パレット側で .badge を用意している場合）
-    root.querySelectorAll('[data-colorpicker]').forEach((picker) => {
-      const key = picker.dataset.colorpicker;
-      const src = key === "textColor" ? textInp : bgInp;
-      const val = (src?.value || "").trim();
-      const badge = picker.parentElement?.querySelector(".badge");
-      if (badge) badge.textContent = (val || (key === "textColor" ? FALLBACK.text : FALLBACK.bg)).toUpperCase();
-    });
+    if (!card) return;
+    card.style.fontFamily = (font?.value  || "").trim() || FALLBACK.font;
+    card.style.color      = (textI?.value || "").trim() || FALLBACK.text;
+    card.style.background = (bgI?.value   || "").trim() || FALLBACK.bg;
   };
 
-  const bindPair = (text, picker) => {
-    if (!text || !picker) return;
-    picker.addEventListener("input", e => { text.value = e.target.value; apply(); });
-    text.addEventListener("input",  e => { if (/^#(?:[0-9a-fA-F]{3}){1,2}$/.test(e.target.value)) picker.value = e.target.value; apply(); });
-  };
-
-  // クイックフォント
+  // フォント：クイックボタン
   root.querySelectorAll('[data-quick-font]').forEach(btn => {
     btn.addEventListener("click", () => {
-      if (!fontSel) return;
-      fontSel.value = btn.dataset.quickFont;
-      fontSel.dispatchEvent(new Event("change"));
+      if (!font) return;
+      font.value = btn.dataset.quickFont;
+      font.dispatchEvent(new Event("change", { bubbles: true }));
     });
   });
 
-  // FAB表示制御（プレビューが画面外に出たら表示）
+  // 入力の変化を監視（Stimulusが input/change を発火してくれる）
+  font?.addEventListener("change", apply);
+  textI?.addEventListener("input",  apply);
+  textI?.addEventListener("change", apply);
+  bgI?.addEventListener("input",    apply);
+  bgI?.addEventListener("change",   apply);
+
+  // 初期反映
+  apply();
+
+  // SP：プレビューが画面外に出たらFAB表示
   if (card && fab && "IntersectionObserver" in window) {
     const io = new IntersectionObserver(([ent]) => {
       fab.classList.toggle("hidden", ent.isIntersecting);
     }, { threshold: 0.1 });
     io.observe(card);
-
     fab.addEventListener("click", () => {
       card.scrollIntoView({ behavior: "smooth", block: "nearest" });
     });
   }
-
-  fontSel?.addEventListener("change", apply);
-  bindPair(textInp, textPick);
-  bindPair(bgInp,   bgPick);
-  apply(); // 初期反映
 })();
 </script>

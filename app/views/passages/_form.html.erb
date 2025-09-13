@@ -291,186 +291,183 @@
 <%# ================= プレビュー反映スクリプト（PC/モバイル対応） ================= %>
 <script>
 (function(){
-  const form = document.getElementById("passage-form") || document.querySelector("form");
-  if (!form) return;
+  function setupPreview(){
+    const form = document.getElementById("passage-form") || document.querySelector("form");
+    if (!form || form.dataset.previewBound === "1") return; // 二重バインド防止
+    form.dataset.previewBound = "1";
 
-  // 入力
-  const title  = form.querySelector('[data-preview-target="title"]');
-  const author = form.querySelector('[data-preview-target="author"]');
-  const body   = form.querySelector('[data-preview-target="content"]');
-  const fontSel= form.querySelector('[data-preview-target="font"]');
-  const textInp= form.querySelector('[data-preview-target="textColor"]');
-  const bgInp  = form.querySelector('[data-preview-target="bgColor"]');
-  const textPick = form.querySelector('input[data-colorpicker="textColor"]');
-  const bgPick   = form.querySelector('input[data-colorpicker="bgColor"]');
+    // === ここから下は元の処理をそのまま移植（内容は変えない） ===
 
-  // PC
-  const cardD = document.getElementById('preview-card-desktop');
-  const metaD = document.getElementById('preview-meta-desktop');
-  const contD = document.getElementById('preview-content-desktop');
+    // 入力
+    const title  = form.querySelector('[data-preview-target="title"]');
+    const author = form.querySelector('[data-preview-target="author"]');
+    const body   = form.querySelector('[data-preview-target="content"]');
+    const fontSel= form.querySelector('[data-preview-target="font"]');
+    const textInp= form.querySelector('[data-preview-target="textColor"]');
+    const bgInp  = form.querySelector('[data-preview-target="bgColor"]');
+    const textPick = form.querySelector('input[data-colorpicker="textColor"]');
+    const bgPick   = form.querySelector('input[data-colorpicker="bgColor"]');
 
-  // モバイル
-  const cardM = document.getElementById('preview-card-mobile');
-  const metaM = document.getElementById('preview-meta-mobile');
-  const contM = document.getElementById('preview-content-mobile');
+    // PC
+    const cardD = document.getElementById('preview-card-desktop');
+    const metaD = document.getElementById('preview-meta-desktop');
+    const contD = document.getElementById('preview-content-desktop');
 
-  const anyCard = cardD || cardM;
-  const FALLBACK = {
-    font: (anyCard && anyCard.style.fontFamily) || "var(--font-serif)",
-    text: (anyCard && anyCard.style.color)      || "#111827",
-    bg:   (anyCard && anyCard.style.background) || "#F9FAFB"
-  };
+    // モバイル
+    const cardM = document.getElementById('preview-card-mobile');
+    const metaM = document.getElementById('preview-meta-mobile');
+    const contM = document.getElementById('preview-content-mobile');
 
-  function setCardStyle(el){
-    if (!el) return;
-    el.style.fontFamily = (fontSel && fontSel.value.trim()) || FALLBACK.font;
-    el.style.color      = (textInp && textInp.value.trim()) || FALLBACK.text;
-    el.style.background = (bgInp   && bgInp.value.trim())   || FALLBACK.bg;
-  }
-
-  function updateMeta(){
-    const a = (author?.value || "").trim();
-    const t = (title?.value  || "").trim();
-    const meta = [a, t ? `『${t}』` : null].filter(Boolean).join(" ");
-    if (metaD) metaD.textContent = meta;
-    if (metaM) metaM.textContent = meta;
-  }
-
-  function updateBody(){
-    const v = (body?.value || "");
-    if (contD) contD.textContent = v;
-    if (contM) contM.textContent = v;
-  }
-
-  function applyStyleBoth(){
-    setCardStyle(cardD);
-    setCardStyle(cardM);
-  }
-
-  // ピッカー <-> テキスト 双方向同期
-  function bindPair(textInput, colorInput){
-    if (!textInput || !colorInput) return;
-    colorInput.addEventListener("input", e => {
-      textInput.value = e.target.value;
-      applyStyleBoth();
-    });
-    textInput.addEventListener("input", e => {
-      if (/^#/.test(e.target.value)) colorInput.value = e.target.value;
-      applyStyleBoth();
-    });
-  }
-
-  // クイックフォント
-  form.querySelectorAll('[data-quick-font]').forEach(btn => {
-    btn.addEventListener("click", () => {
-      if (!fontSel) return;
-      fontSel.value = btn.dataset.quickFont;
-      fontSel.dispatchEvent(new Event("change"));
-    });
-  });
-
-  // 最近色ユーティリティ
-  function rgbToHex(rgb) {
-    const m = rgb.match(/\d+/g);
-    if (!m) return "";
-    return "#" + m.slice(0, 3).map(n => ("0" + parseInt(n, 10).toString(16)).slice(-2)).join("");
-  }
-
-  function saveRecent(inputEl, hex) {
-    if (!hex || !hex.startsWith("#")) return;
-    const key = inputEl === textInp ? "recent_text" : "recent_bg";
-    const arr = JSON.parse(localStorage.getItem(key) || "[]").filter(v => v !== hex);
-    arr.unshift(hex);
-    localStorage.setItem(key, JSON.stringify(arr.slice(0, 8)));
-    renderRecent();
-  }
-
-  function renderRecent() {
-    const wrapText = form.querySelector('[data-recent="textColor"]');
-    const wrapBg   = form.querySelector('[data-recent="bgColor"]');
-
-    const make = (hex, key) => {
-      const b = document.createElement("button");
-      b.type = "button"; b.title = hex;
-      b.className = "size-6 rounded-full border";
-      b.style.background = hex;
-      b.dataset.colorPreset = key;
-      b.dataset.value = hex;
-      b.addEventListener("click", () => {
-        const text = key === "textColor" ? textInp : bgInp;
-        const pick = key === "textColor" ? textPick : bgPick;
-        if (text) text.value = hex;
-        if (pick) pick.value = hex;
-        applyStyleBoth(); saveRecent(text, hex);
-      });
-      return b;
+    const anyCard = cardD || cardM;
+    const FALLBACK = {
+      font: (anyCard && anyCard.style.fontFamily) || "var(--font-serif)",
+      text: (anyCard && anyCard.style.color)      || "#111827",
+      bg:   (anyCard && anyCard.style.background) || "#F9FAFB"
     };
 
-    if (wrapText) {
-      wrapText.innerHTML = "";
-      (JSON.parse(localStorage.getItem("recent_text") || "[]"))
-        .forEach(hex => wrapText.appendChild(make(hex, "textColor")));
+    function setCardStyle(el){
+      if (!el) return;
+      el.style.fontFamily = (fontSel && fontSel.value.trim()) || FALLBACK.font;
+      el.style.color      = (textInp && textInp.value.trim()) || FALLBACK.text;
+      el.style.background = (bgInp   && bgInp.value.trim())   || FALLBACK.bg;
     }
-    if (wrapBg) {
-      wrapBg.innerHTML = "";
-      (JSON.parse(localStorage.getItem("recent_bg") || "[]"))
-        .forEach(hex => wrapBg.appendChild(make(hex, "bgColor")));
+    function updateMeta(){
+      const a = (author?.value || "").trim();
+      const t = (title?.value  || "").trim();
+      const meta = [a, t ? `『${t}』` : null].filter(Boolean).join(" ");
+      if (metaD) metaD.textContent = meta;
+      if (metaM) metaM.textContent = meta;
+    }
+    function updateBody(){
+      const v = (body?.value || "");
+      if (contD) contD.textContent = v;
+      if (contM) contM.textContent = v;
+    }
+    function applyStyleBoth(){ setCardStyle(cardD); setCardStyle(cardM); }
+
+    function bindPair(textInput, colorInput){
+      if (!textInput || !colorInput) return;
+      colorInput.addEventListener("input", e => {
+        textInput.value = e.target.value;
+        applyStyleBoth();
+      });
+      textInput.addEventListener("input", e => {
+        if (/^#/.test(e.target.value)) colorInput.value = e.target.value;
+        applyStyleBoth();
+      });
+    }
+
+    // クイックフォント
+    form.querySelectorAll('[data-quick-font]').forEach(btn => {
+      btn.addEventListener("click", () => {
+        if (!fontSel) return;
+        fontSel.value = btn.dataset.quickFont;
+        fontSel.dispatchEvent(new Event("change", { bubbles: true }));
+      });
+    });
+
+    function rgbToHex(rgb) {
+      const m = rgb.match(/\d+/g);
+      if (!m) return "";
+      return "#" + m.slice(0, 3).map(n => ("0" + parseInt(n, 10).toString(16)).slice(-2)).join("");
+    }
+    function saveRecent(inputEl, hex) {
+      if (!hex || !hex.startsWith("#")) return;
+      const key = inputEl === textInp ? "recent_text" : "recent_bg";
+      const arr = JSON.parse(localStorage.getItem(key) || "[]").filter(v => v !== hex);
+      arr.unshift(hex);
+      localStorage.setItem(key, JSON.stringify(arr.slice(0, 8)));
+      renderRecent();
+    }
+    function renderRecent() {
+      const wrapText = form.querySelector('[data-recent="textColor"]');
+      const wrapBg   = form.querySelector('[data-recent="bgColor"]');
+      const make = (hex, key) => {
+        const b = document.createElement("button");
+        b.type = "button"; b.title = hex;
+        b.className = "size-6 rounded-full border";
+        b.style.background = hex;
+        b.dataset.colorPreset = key;
+        b.dataset.value = hex;
+        b.addEventListener("click", () => {
+          const text = key === "textColor" ? textInp : bgInp;
+          const pick = key === "textColor" ? textPick : bgPick;
+          if (text) text.value = hex;
+          if (pick) pick.value = hex;
+          applyStyleBoth(); saveRecent(text, hex);
+        });
+        return b;
+      };
+      if (wrapText) {
+        wrapText.innerHTML = "";
+        (JSON.parse(localStorage.getItem("recent_text") || "[]"))
+          .forEach(hex => wrapText.appendChild(make(hex, "textColor")));
+      }
+      if (wrapBg) {
+        wrapBg.innerHTML = "";
+        (JSON.parse(localStorage.getItem("recent_bg") || "[]"))
+          .forEach(hex => wrapBg.appendChild(make(hex, "bgColor")));
+      }
+    }
+
+    form.querySelectorAll('[data-color-preset]').forEach(btn => {
+      btn.addEventListener("click", (e) => {
+        const key = e.currentTarget.dataset.colorPreset;
+        const val = e.currentTarget.dataset.value;
+        const text = key === "textColor" ? textInp : bgInp;
+        const pick = key === "textColor" ? textPick : bgPick;
+        if (text) text.value = val;
+        if (pick) pick.value = val;
+        applyStyleBoth(); saveRecent(text, val);
+      });
+    });
+    form.querySelectorAll('[data-clear-color]').forEach(btn => {
+      btn.addEventListener("click", (e) => {
+        const key = e.currentTarget.dataset.clearColor;
+        const text = key === "textColor" ? textInp : bgInp;
+        if (text) text.value = "";
+        applyStyleBoth();
+      });
+    });
+    form.querySelectorAll('[data-pick-current]').forEach(btn => {
+      btn.addEventListener("click", (e) => {
+        const key = e.currentTarget.dataset.pickCurrent;
+        const text = key === "textColor" ? textInp : bgInp;
+        const prop = key === "textColor" ? "color" : "backgroundColor";
+        const source = cardD || cardM;
+        const val = source ? rgbToHex(getComputedStyle(source)[prop]) : "";
+        if (text && val) text.value = val;
+        const pick = key === "textColor" ? textPick : bgPick;
+        if (pick) pick.value = val;
+        applyStyleBoth(); saveRecent(text, val);
+      });
+    });
+
+    [title, author].forEach(el => el && el.addEventListener("input", updateMeta));
+    body && body.addEventListener("input", updateBody);
+    fontSel && fontSel.addEventListener("change", applyStyleBoth);
+    bindPair(textInp, textPick);
+    bindPair(bgInp, bgPick);
+
+    // 初期表示
+    updateMeta(); updateBody(); applyStyleBoth(); renderRecent();
+
+    // モバイル：展開/収納
+    const toggleBtn = document.getElementById('toggle-mobile-preview');
+    if (toggleBtn && cardM){
+      let expanded = true;
+      toggleBtn.addEventListener('click', () => {
+        expanded = !expanded;
+        cardM.style.maxHeight = expanded ? '28vh' : '10vh';
+        cardM.style.overflow  = 'auto';
+      });
     }
   }
 
-  // プリセット/未指定/現在色
-  form.querySelectorAll('[data-color-preset]').forEach(btn => {
-    btn.addEventListener("click", (e) => {
-      const key = e.currentTarget.dataset.colorPreset;
-      const val = e.currentTarget.dataset.value;
-      const text = key === "textColor" ? textInp : bgInp;
-      const pick = key === "textColor" ? textPick : bgPick;
-      if (text) text.value = val;
-      if (pick) pick.value = val;
-      applyStyleBoth(); saveRecent(text, val);
-    });
-  });
-  form.querySelectorAll('[data-clear-color]').forEach(btn => {
-    btn.addEventListener("click", (e) => {
-      const key = e.currentTarget.dataset.clearColor;
-      const text = key === "textColor" ? textInp : bgInp;
-      if (text) text.value = "";
-      applyStyleBoth();
-    });
-  });
-  form.querySelectorAll('[data-pick-current]').forEach(btn => {
-    btn.addEventListener("click", (e) => {
-      const key = e.currentTarget.dataset.pickCurrent;
-      const text = key === "textColor" ? textInp : bgInp;
-      const prop = key === "textColor" ? "color" : "backgroundColor";
-      const source = cardD || cardM;
-      const val = source ? rgbToHex(getComputedStyle(source)[prop]) : "";
-      if (text && val) text.value = val;
-      const pick = key === "textColor" ? textPick : bgPick;
-      if (pick) pick.value = val;
-      applyStyleBoth(); saveRecent(text, val);
-    });
-  });
-
-  // イベント
-  [title, author].forEach(el => el && el.addEventListener("input", updateMeta));
-  body && body.addEventListener("input", updateBody);
-  fontSel && fontSel.addEventListener("change", applyStyleBoth);
-  bindPair(textInp, textPick);
-  bindPair(bgInp, bgPick);
-
-  // 初期反映
-  updateMeta(); updateBody(); applyStyleBoth(); renderRecent();
-
-  // モバイル：展開/収納
-  const toggleBtn = document.getElementById('toggle-mobile-preview');
-  if (toggleBtn && cardM){
-    let expanded = true;
-    toggleBtn.addEventListener('click', () => {
-      expanded = !expanded;
-      cardM.style.maxHeight = expanded ? '28vh' : '10vh';
-      cardM.style.overflow  = 'auto';
-    });
-  }
+  // Turbo でも通常遷移でも確実に初期化
+  document.addEventListener("turbo:load",   setupPreview);
+  document.addEventListener("turbo:render", setupPreview);
+  if (document.readyState !== "loading") setupPreview();
+  else document.addEventListener("DOMContentLoaded", setupPreview);
 })();
 </script>

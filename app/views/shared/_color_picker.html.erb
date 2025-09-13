@@ -1,11 +1,10 @@
-<%# 引数: f:, field:, label:, key:, default_color: %>
 <div
   data-controller="color-picker"
-  data-color-picker-key-value="<%= key %>"
->
+  data-color-picker-key-value="<%= picker_key %>"><!-- 例: "text" / "bg" -->
+
   <%= f.label field, label, class: "block font-semibold mb-1" %>
 
-  <!-- プリセット（必要に応じて増減OK） -->
+  <!-- プリセット -->
   <div class="flex flex-wrap gap-2 mb-2">
     <% [
       "#111827", "#374151", "#6B7280", "#9CA3AF", "#F9FAFB",
@@ -25,21 +24,21 @@
     <%= f.text_field field,
           class: "input input-bordered w-full",
           placeholder: default_color,
-          value: default_color,
-          data: {
-            "color-picker-target": "field",
-            "preview-target": key
-          } %>
+          value: (f.object.public_send(field) || default_color),
+          data: { action: "input->color-picker#manual change->color-picker#manual",
+                  color_picker_target: "field" } %>
 
     <input type="color"
            class="input w-12 p-0"
-           value="<%= default_color %>"
-           data-color-picker-target="native"
-           data-action="input->color-picker#choose" />
+           value="<%= (f.object.public_send(field) || default_color) %>"
+           data-action="input->color-picker#choose change->color-picker#choose"
+           data-color-picker-target="native" />
 
-    <span class="badge" data-color-picker-target="badge"><%= default_color.upcase %></span>
+    <span class="badge" data-color-picker-target="badge">
+      <%= (f.object.public_send(field) || default_color).upcase %>
+    </span>
   </div>
 
-  <!-- 最近使った色（JSで自動描画） -->
+  <!-- 最近使った色（JSで差し込む） -->
   <div class="mt-2 flex flex-wrap gap-2" data-color-picker-target="recent"></div>
 </div>

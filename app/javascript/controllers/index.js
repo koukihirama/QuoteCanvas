@@ -1,16 +1,18 @@
-import { application } from "./application"
+import { application } from "./application";
 
-import BookSearchController from "./book_search_controller"
-application.register("book-search", BookSearchController)
+import BookSearchController  from "./book_search_controller";
+import OnboardingController  from "./onboarding_controller";
+import ColorPickerController from "./color_picker_controller";
+import HelloController       from "./hello_controller";
+import LashController        from "./lash_controller";
+import WelcomeController     from "./welcome_controller";
 
-import HelloController from "./hello_controller"
-application.register("hello", HelloController)
+application.register("book-search",  BookSearchController);
+application.register("onboarding",   OnboardingController);
+application.register("color-picker",  ColorPickerController);
+application.register("hello",        HelloController);
+application.register("lash",         LashController);
+application.register("welcome",      WelcomeController);
 
-import LashController from "./lash_controller"
-application.register("lash", LashController)
-
-import WelcomeController from "./welcome_controller"
-application.register("welcome", WelcomeController)
-
-import OnboardingController from "./onboarding_controller";
-application.register("onboarding", OnboardingController);
+// 余計な Application.start() や window.Stimulus の代入は不要
+export {};
