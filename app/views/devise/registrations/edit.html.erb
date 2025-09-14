@@ -1,5 +1,4 @@
-<!-- 背景 -->
-<div class="fixed inset-0 -z-10 gh-sky">
+<div class="fixed inset-0 -z-10 gh-sky" aria-hidden="true">
   <div class="absolute inset-0 gh-hills opacity-70"></div>
   <div class="absolute inset-0 gh-grain pointer-events-none"></div>
 </div>
@@ -29,16 +28,19 @@
         </div>
       <% end %>
 
-      <!-- 名前 -->
+      <!-- 名前（編集可） -->
       <div>
         <%= f.label :name, "名前", class: "block font-semibold mb-1" %>
-        <%= f.text_field :name, class: "input input-bordered w-full" %>
+        <%= f.text_field :name, class: "input input-bordered w-full", placeholder: "表示名" %>
       </div>
 
-      <!-- メール -->
+      <!-- メール（MVPでは編集不可） -->
       <div>
-        <%= f.label :email, "メールアドレス", class: "block font-semibold mb-1" %>
-        <%= f.email_field :email, autofocus: true, class: "input input-bordered w-full" %>
+        <label class="block font-semibold mb-1">メールアドレス</label>
+        <input type="email" value="<%= resource.email %>" class="input input-bordered w-full" disabled>
+        <p class="text-xs opacity-70 mt-1">
+          メールの変更は<strong>本リリース後に対応予定</strong>です（現在は変更できません）。
+        </p>
       </div>
 
       <!-- Devise仕様: 確認用の現在パスワード -->
@@ -46,7 +48,9 @@
         <%= f.label :current_password, "現在のパスワード（確認用）", class: "block font-semibold mb-1" %>
         <%= f.password_field :current_password, autocomplete: "current-password",
                              class: "input input-bordered w-full" %>
-        <p class="text-sm opacity-70 mt-1">プロフィールを更新するには現在のパスワードが必要です。</p>
+        <p class="text-xs opacity-70 mt-1">
+          プロフィールを更新するには現在のパスワードが必要です。
+        </p>
       </div>
 
       <div class="flex gap-2">

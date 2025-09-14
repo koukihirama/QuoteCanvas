@@ -1,6 +1,9 @@
 Rails.application.routes.draw do
   get "static/guide"
-  devise_for :users
+
+  #  パスワード機能をスキップ
+  devise_for :users, skip: [ :passwords ],
+             controllers: { registrations: "users/registrations" }
 
   # ヘルス/PWA
   get "up"             => "rails/health#show",  as: :rails_health_check
@@ -13,24 +16,19 @@ Rails.application.routes.draw do
   get "profile",   to: "users#show", as: :profile
 
   get "books/lookup", to: "books#lookup"
-  get "/guide", to: "static#guide", as: :guide
+  get "/guide",       to: "static#guide", as: :guide
   patch "users/hide_guide", to: "users#hide_guide"
 
   resources :users, only: [ :show ]
 
-  # 書籍検索フォーム画面
   resources :book_infos, only: [] do
-    collection do
-      get :search
-    end
+    collection { get :search }
   end
 
-  # API (残しておく)
   namespace :api do
     resources :books, only: [ :index ]
   end
 
-  # passages
   resources :passages, only: [ :index, :new, :create, :show, :edit, :update, :destroy ] do
     resources :thought_logs, only: [ :new, :create, :destroy ]
     resource  :customization, only: [ :new, :create, :edit, :update ],
