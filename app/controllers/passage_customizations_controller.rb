@@ -11,7 +11,7 @@ class PassageCustomizationsController < ApplicationController
   def create
     @customization = @passage.build_customization(customization_params.merge(user: current_user))
     if @customization.save
-      redirect_to @passage, notice: "カスタマイズを保存したよ。"
+      redirect_to passage_path(@passage, from: "customize"), notice: "見た目を保存しました。"
     else
       flash.now[:alert] = "保存に失敗しちゃった…入力を見直してね。"
       render :new, status: :unprocessable_entity
@@ -25,7 +25,7 @@ class PassageCustomizationsController < ApplicationController
   def update
     @customization = @passage.customization
     if @customization.update(customization_params)
-      redirect_to @passage, notice: "カスタマイズを更新したよ。"
+      redirect_to passage_path(@passage, from: "customize"), notice: "見た目を更新しました。"
     else
       flash.now[:alert] = "更新に失敗しちゃった…入力を見直してね。"
       render :edit, status: :unprocessable_entity
