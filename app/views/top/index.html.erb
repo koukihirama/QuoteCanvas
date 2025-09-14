@@ -52,10 +52,11 @@
               </div>
 
               <div class="grid grid-cols-2 gap-4">
+                <!-- Unknown を太宰 治に置換（PD） -->
                 <div class="relative rounded-2xl p-4 border" style="background:#111827; color:#F9FAFB; font-family: ui-monospace, SFMono-Regular, Menlo, monospace;">
                   <div class="absolute inset-0 gh-grain pointer-events-none rounded-2xl opacity-40"></div>
-                  <div class="text-[10px] opacity-70 mb-1">Unknown『Daily Notes』</div>
-                  <div class="text-sm font-semibold">Keep the words that keep you.</div>
+                  <div class="text-[10px] opacity-70 mb-1">太宰 治『走れメロス』</div>
+                  <div class="text-sm font-semibold">メロスは激怒した。</div>
                 </div>
                 <div class="relative rounded-2xl p-4 border gh-paper" style="color:#065F46; font-family: var(--font-sans);">
                   <div class="absolute inset-0 gh-grain pointer-events-none rounded-2xl"></div>
@@ -123,11 +124,11 @@
       <div class="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
         <% samples = [
           {bg:"#FDF2F8", fg:"#4A044E", font:"var(--font-serif)",    meta:"与謝野晶子『みだれ髪』", body:"その手をば柔らかにして我に触れよ"},
-          {bg:"#111827", fg:"#F9FAFB", font:"ui-monospace,SFMono-Regular,Menlo,monospace", meta:"Unknown『Daily Notes』", body:"Write what you don't want to forget."},
+          {bg:"#111827", fg:"#F9FAFB", font:"ui-monospace,SFMono-Regular,Menlo,monospace", meta:"太宰 治『走れメロス』", body:"メロスは激怒した。"},
           {bg:"#ECFDF5", fg:"#065F46", font:"var(--font-sans)",      meta:"川端 康成『雪国』", body:"国境の長いトンネルを抜けると雪国であった。"},
           {bg:"#FEF3C7", fg:"#78350F", font:"var(--font-serif)",    meta:"夏目 漱石『草枕』", body:"智に働けば角が立つ。情に棹させば流される。"},
           {bg:"#DBEAFE", fg:"#1E3A8A", font:"var(--font-sans)",      meta:"吉本ばなな『キッチン』", body:"この世で一番好きな場所は台所だ。"},
-          {bg:"#F3F4F6", fg:"#111827", font:"ui-monospace,SFMono-Regular,Menlo,monospace", meta:"Unknown『Work Log』", body:"Small, steady steps compound."}
+          {bg:"#F3F4F6", fg:"#111827", font:"var(--font-serif)",     meta:"宮沢 賢治『雨ニモマケズ』", body:"雨ニモマケズ 風ニモマケズ"}
         ] %>
         <% samples.each do |c| %>
           <div class="relative rounded-2xl p-6 border"
@@ -148,8 +149,8 @@
       <div class="mt-8 grid gap-6 md:grid-cols-3">
         <%[
           {title:"テーマ切替", body:"気分でダーク／ライトや配色テーマを選択。"},
-          {title:"タグと検索", body:"一節をタグで整理、振り返りをもっと気軽に。"},
-          {title:"共有画像生成", body:"作ったカードを画像出力してシェア。"}
+          {title:"タグと検索", body:"タグ付けとキーワードで、欲しい一節を素早く発見。"},
+          {title:"タグ機能の強化", body:"おすすめタグ・一括編集・並び替えで整理しやすく。"}
         ].each do |f| %>
           <div class="rounded-2xl gh-glass p-6 hover-float">
             <h3 class="font-bold text-xl font-sans"><%= f[:title] %></h3>
