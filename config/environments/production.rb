@@ -10,14 +10,19 @@ Rails.application.configure do
   # Sprockets / assets
   config.assets.compile = false
 
-  # Active Storage（Render だとローカルは短命なので将来的にS3等へ）
+  # Active Storage（将来的に S3 などへ移行を検討）
   config.active_storage.service = :local
 
-  # HTTPS を強制
+  # HTTPS を強制（ヘルスチェック /up は除外）
   config.force_ssl = true
+  config.ssl_options = {
+    redirect: { exclude: ->(req) { req.path == "/up" } }
+  }
 
-  # Logging
-  config.logger = ActiveSupport::Logger.new(STDOUT).tap { |l| l.formatter = ::Logger::Formatter.new }
+  # Logging（TaggedLogging で request_id などのタグを確実に出力）
+  logger = ActiveSupport::Logger.new($stdout)
+  logger.formatter = ::Logger::Formatter.new
+  config.logger = ActiveSupport::TaggedLogging.new(logger)
   config.log_tags = [ :request_id ]
   config.log_level = ENV.fetch("RAILS_LOG_LEVEL", "info")
   config.active_support.report_deprecations = false
@@ -29,10 +34,10 @@ Rails.application.configure do
   config.active_record.dump_schema_after_migration = false
 
   # =========================
-  # Mailer / URL まわり（★重要）
+  # Mailer / URL まわり
   # =========================
-  host     = ENV.fetch("APP_HOST", "localhost")       # 例: "quotecanvas.onrender.com"
-  protocol = ENV.fetch("APP_PROTOCOL", "https")       # "https" or "http"
+  host     = ENV.fetch("APP_HOST", "localhost")   # 例: "quotecanvas.onrender.com"
+  protocol = ENV.fetch("APP_PROTOCOL", "https")   # "https" or "http"
 
   # Devise の *_url で使われる既定値
   config.action_mailer.default_url_options = { host:, protocol: }
@@ -41,17 +46,17 @@ Rails.application.configure do
   Rails.application.routes.default_url_options[:host]     = host
   Rails.application.routes.default_url_options[:protocol] = protocol
 
-  # メール内の画像などを絶対URLにしたい場合
+  # メール内の画像などを絶対URLで指す場合に利用
   config.action_mailer.asset_host = "#{protocol}://#{host}"
 
-  # 本番ではメールを実際に送る想定に
-  config.action_mailer.perform_caching   = false
-  config.action_mailer.perform_deliveries = true
-  config.action_mailer.raise_delivery_errors = true
-  config.action_mailer.default_options = { from: ENV.fetch("MAILER_FROM", "no-reply@#{host}") }
+  # メール配送
+  config.action_mailer.perform_caching         = false
+  config.action_mailer.perform_deliveries      = true
+  config.action_mailer.raise_delivery_errors   = true
+  config.action_mailer.default_options         = { from: ENV.fetch("MAILER_FROM", "no-reply@#{host}") }
 
-  # （任意）SMTP を環境変数で設定している場合だけ適用
   if ENV["SMTP_ADDRESS"].present?
+    # SMTP を設定したら自動で有効化
     config.action_mailer.delivery_method = :smtp
     config.action_mailer.smtp_settings = {
       address:              ENV["SMTP_ADDRESS"],
@@ -62,5 +67,9 @@ Rails.application.configure do
       authentication:       ENV.fetch("SMTP_AUTH", "plain"),
       enable_starttls_auto: ActiveModel::Type::Boolean.new.cast(ENV.fetch("SMTP_STARTTLS", "true"))
     }.compact
+  else
+    # SMTP 未設定時は “失敗しないが送らない” セーフティ
+    # （プロバイダ設定後は上のブロックが使われます）
+    config.action_mailer.delivery_method = :test
   end
 end
