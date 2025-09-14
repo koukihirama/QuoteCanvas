@@ -3,10 +3,12 @@
     ログイン
   </h1>
 
-  <%= form_with model: resource, url: session_path(resource_name), class: "mt-6 space-y-4 font-sans" do |f| %>
+  <%# Deviseは scope 指定が相性よい。local: true で通常POSTに %>
+  <%= form_with scope: resource_name, url: session_path(resource_name),
+                class: "mt-6 space-y-4 font-sans", local: true do |f| %>
     <div>
       <%= f.label :email, class: "label" %>
-      <%= f.email_field :email, autofocus: true, class: "input input-bordered w-full" %>
+      <%= f.email_field :email, autofocus: true, class: "input input-bordered w-full", autocomplete: "email" %>
     </div>
 
     <div>
@@ -21,7 +23,15 @@
           <span class="label-text">ログイン状態を保持</span>
         </label>
       <% end %>
-      <%= link_to "パスワードをお忘れですか？", new_password_path(resource_name), class: "link link-primary" if devise_mapping.recoverable? %>
+
+      <%# ▼ パスワード再設定リンクは「機能フラグ」＆「ルート存在」時のみ表示 %>
+      <% pw_flag      = (Rails.configuration.x.features.password_reset_enabled rescue false) %>
+      <% route_helper = :"new_#{resource_name}_password_path" %>
+      <% if devise_mapping.recoverable? && pw_flag && main_app.respond_to?(route_helper) %>
+        <%= link_to "パスワードをお忘れですか？",
+                    main_app.send(route_helper),
+                    class: "link link-primary" %>
+      <% end %>
     </div>
 
     <%= f.submit "ログイン", class: "btn btn-primary w-full btn-press" %>
