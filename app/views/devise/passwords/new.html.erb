@@ -1,16 +1,50 @@
-<h2>Forgot your password?</h2>
+<%= render "shared/auth_container",
+           title: "パスワードをリセット",
+           subtitle: "登録メールアドレスに再設定用リンクをお送りします" do %>
 
-<%= form_for(resource, as: resource_name, url: password_path(resource_name), html: { method: :post }) do |f| %>
-  <%= render "devise/shared/error_messages", resource: resource %>
+  <%= form_with model: resource,
+                scope: resource_name,
+                url: password_path(resource_name),
+                method: :post,
+                local: true,
+                html: { autocomplete: "off", class: "space-y-4" } do |f| %>
 
-  <div class="field">
-    <%= f.label :email %><br />
-    <%= f.email_field :email, autofocus: true, autocomplete: "email" %>
-  </div>
+    <%# エラー表示（ある場合） %>
+    <%= render "devise/shared/error_messages", resource: resource %>
 
-  <div class="actions">
-    <%= f.submit "Send me reset password instructions" %>
+    <div>
+      <%= f.label :email, "メールアドレス", class: "block font-semibold mb-1" %>
+      <%= f.email_field :email,
+            autofocus: true,
+            autocomplete: "email",
+            placeholder: "you@example.com",
+            class: "input input-bordered w-full",
+            aria: { describedby: "reset-help" } %>
+      <p id="reset-help" class="mt-1 text-xs opacity-70">
+        入力したアドレス宛に <b>再設定リンク</b> を送ります。リンクには有効期限があります。
+      </p>
+    </div>
+
+    <div class="flex flex-wrap gap-2">
+      <%= f.submit "再設定メールを送る", class: "btn btn-primary btn-press" %>
+      <%= link_to "ログインへ戻る", new_session_path(resource_name), class: "btn btn-ghost" %>
+    </div>
+  <% end %>
+
+  <%# 届かないときのヘルプ %>
+  <details class="mt-6 rounded-xl gh-glass p-4">
+    <summary class="font-semibold cursor-pointer">メールが届かないとき</summary>
+    <ul class="list-disc pl-5 text-sm mt-2 opacity-80 space-y-1">
+      <li>迷惑メールや「プロモーション」タブに入っていないか確認してください</li>
+      <li>送信元 <code>please-change-me-at-config-initializers-devise@example.com</code> を受信許可してください</li>
+      <li>数分待っても届かない場合は、入力アドレスをご確認の上もう一度お試しください</li>
+    </ul>
+  </details>
+
+  <%# 下部リンク %>
+  <div class="mt-6 text-sm opacity-80 flex flex-wrap gap-3">
+    <%= link_to "新規登録はこちら", new_registration_path(resource_name), class: "link link-primary" %>
+    <span class="opacity-40">/</span>
+    <%= link_to "ログイン画面へ", new_session_path(resource_name), class: "link link-primary" %>
   </div>
 <% end %>
-
-<%= render "devise/shared/links" %>
