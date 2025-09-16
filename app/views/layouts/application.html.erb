@@ -2,18 +2,24 @@
 <html lang="ja">
   <head>
     <meta charset="utf-8">
-    <title><%= content_for(:title) || "QuoteCanvas" %></title>
-    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title><%= content_for?(:title) ? yield(:title) : "QuoteCanvas" %></title>
+
+    <!-- 表示最適化 -->
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <meta name="color-scheme" content="light dark">
-    <meta name="theme-color" content="#F9FAFB">
+
+    <!-- テーマカラー（ライト/ダークで切替） -->
+    <meta name="theme-color" content="#F9FAFB" media="(prefers-color-scheme: light)">
+    <meta name="theme-color" content="#0B1020" media="(prefers-color-scheme: dark)">
 
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
     <%= yield :head %>
 
+    <!-- PWA -->
     <link rel="manifest" href="/manifest.json">
 
-    <%# フォント最適化：Interはローカル（inter-font.css）、GoogleはShipporiのみ %>
+    <%# フォント：InterはローカルCSS（app/assets/stylesheets/inter-font.css）、ShipporiはGoogle %>
     <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@600;700&display=swap" rel="stylesheet">
@@ -23,33 +29,46 @@
 
     <%= javascript_include_tag "application", "data-turbo-track": "reload", type: "module" %>
 
-    <style>
-      /* Turbo プログレスバーを少し見やすく */
-      .turbo-progress-bar{ height:3px; background:linear-gradient(90deg,#22d3ee,#f472b6); }
+    <%# Turbo プログレスバー（CSP nonce 付き） %>
+    <style nonce="<%= content_security_policy_nonce %>">
+      .turbo-progress-bar {
+        height: 3px;
+        background: linear-gradient(90deg, #22d3ee, #f472b6);
+      }
     </style>
   </head>
 
   <body class="min-h-dvh flex flex-col bg-base-200">
+    <!-- 背景（content_for :bg があればそっちを、無ければデフォルト背景） -->
+    <%= content_for?(:bg) ? yield(:bg) : render("shared/bg_sky") %>
+
     <!-- キーボード操作向け：コンテンツへスキップ -->
-    <a href="#main" class="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2
-                         focus:bg-base-100 focus:text-base-content focus:px-3 focus:py-2 focus:rounded">
+    <a href="#main"
+       class="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2
+              focus:bg-base-100 focus:text-base-content focus:px-3 focus:py-2 focus:rounded">
       コンテンツへスキップ
     </a>
 
-    <%= render "shared/header" %>
-    <%= render "shared/welcome_banner" %>
+    <!-- 前面コンテンツ -->
+    <div class="relative z-10 flex min-h-0 flex-1 flex-col">
+      <%= render "shared/header" %>
+      <%= render "shared/welcome_banner" %>
 
-    <main id="main"
-          class="container mx-auto w-full max-w-7xl flex-1 px-4 md:px-8 pt-16 md:pt-20 pb-10
-                 min-h-[calc(100dvh-4rem-4rem)] md:min-h-[calc(100dvh-5rem-4rem)]
-                 [padding-bottom:env(safe-area-inset-bottom)]">
-      <%= render "shared/flash" %>
-      <%= yield %>
-    </main>
+      <main id="main" role="main"
+            class="container mx-auto w-full max-w-7xl flex-1 px-4 md:px-8 pt-16 md:pt-20 pb-10
+                   [padding-bottom:env(safe-area-inset-bottom)]">
+        <%= render "shared/flash" %>
+        <%= yield %>
+      </main>
 
-    <%= render "shared/footer" %>
-    <% if user_signed_in? && current_user.show_guide? %>
-      <%= render "shared/onboarding_modal" %>
-    <% end %>
+      <%= render "shared/footer" %>
+
+      <% if user_signed_in? && current_user.show_guide? %>
+        <%= render "shared/onboarding_modal" %>
+      <% end %>
+    </div>
+
+    <%# 追加スクリプトをページ側で挿せるように %>
+    <%= yield :body_end %>
   </body>
 </html>

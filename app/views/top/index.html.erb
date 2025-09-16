@@ -1,71 +1,78 @@
-<!-- 背景：空＋丘＋粒子（粒子はポインタイベント無効） -->
-<div class="fixed inset-0 -z-10 gh-sky" aria-hidden="true">
-  <div class="absolute inset-0 gh-hills opacity-70"></div>
-  <div class="absolute inset-0 gh-grain pointer-events-none"></div>
-</div>
-
-<section class="pt-10 md:pt-12">
+<section class="pt-8 sm:pt-10 md:pt-12">
   <div class="container mx-auto max-w-7xl px-4 md:px-8">
 
     <!-- Hero -->
-    <div class="rounded-3xl gh-glass p-8 md:p-10 relative overflow-hidden hover-float">
+    <div class="rounded-3xl gh-glass p-6 sm:p-8 md:p-10 relative overflow-hidden hover-float">
       <!-- 光のにじみ：モバイルは非表示で軽量化 -->
       <div class="pointer-events-none absolute -top-24 -right-24 size-80 rounded-full bg-gradient-to-tr from-amber-200/40 to-rose-200/40 blur-3xl hidden md:block"></div>
 
-      <div class="grid items-center gap-10 lg:grid-cols-2">
+      <div class="grid items-center gap-8 sm:gap-10 lg:grid-cols-2">
+        <!-- 左：コピー & CTA -->
         <div>
           <div class="flex items-center gap-2 mb-3">
             <span class="badge badge-primary">MVP</span>
             <span class="badge badge-ghost">プライバシー重視</span>
           </div>
-          <h1 class="font-serif text-4xl md:text-5xl tracking-tight gh-underline gh-sparkle">
+
+          <h1 class="font-serif text-fluid-3xl tracking-tight gh-underline gh-sparkle">
             一節が、記憶になる。
           </h1>
-          <p class="mt-4 text-base md:text-lg opacity-85 font-sans">
+
+          <p class="mt-4 text-[15px] sm:text-base md:text-lg opacity-85 font-sans content-readable">
             心に刺さった一節を、<b>著者・タイトル</b>と一緒に保存。<br>
             背景・文字色・フォントを<b>自分らしくカスタム</b>して、“言葉のカード”としてコレクション。<br>
             <span class="opacity-80">思考ログで「言葉 → 気づき」の連鎖も辿れます。</span>
           </p>
 
-          <div class="mt-8 flex flex-col sm:flex-row gap-3">
+          <div class="mt-6 sm:mt-8 flex flex-col sm:flex-row gap-3">
             <% if user_signed_in? %>
-              <%= link_to "ダッシュボードへ", dashboard_path, class: "btn btn-primary btn-press" %>
-              <%= link_to "＋ 一節を記録", new_passage_path, class: "btn btn-outline btn-press underline-grow" %>
+              <%= link_to "ダッシュボードへ", dashboard_path, class: "btn btn-primary btn-press tap-target" %>
+              <%= link_to "＋ 一節を記録", new_passage_path, class: "btn btn-outline btn-press underline-grow tap-target" %>
             <% else %>
-              <%= link_to "無料ではじめる", new_user_registration_path, class: "btn btn-primary btn-press" %>
-              <%= link_to "ログイン", new_user_session_path, class: "btn btn-outline btn-press underline-grow" %>
+              <%= link_to "無料ではじめる", new_user_registration_path, class: "btn btn-primary btn-press tap-target" %>
+              <%= link_to "ログイン", new_user_session_path, class: "btn btn-outline btn-press underline-grow tap-target" %>
             <% end %>
           </div>
           <p class="mt-3 text-xs opacity-60 font-sans">登録は1分。広告なし・いつでも削除できます。</p>
         </div>
 
-        <!-- プレビュー（紙カード風）：高さ安定＆装飾は控えめ -->
+        <!-- 右：プレビュー（紙カード風） -->
         <div class="max-w-lg mx-auto w-full">
-          <div class="rounded-3xl gh-glass p-6 md:p-8 relative overflow-hidden">
-            <div class="grid gap-5">
-              <div class="relative rounded-2xl p-6 border gh-paper">
+          <div class="rounded-3xl gh-glass p-4 sm:p-6 md:p-8 relative overflow-hidden">
+            <div class="grid gap-4 sm:gap-5">
+              <!-- 大きめカード（1列固定） -->
+              <div class="relative rounded-2xl p-5 sm:p-6 border gh-paper overflow-hidden">
                 <div class="absolute inset-0 gh-grain pointer-events-none rounded-2xl"></div>
                 <div class="text-[11px] opacity-70 mb-1 font-sans">夏目 漱石『こころ』</div>
-                <div class="text-xl md:text-2xl font-semibold leading-relaxed font-serif">
+                <div class="card-text font-semibold font-serif text-balance break-words">
                   「人は弱い。弱さを知るところから、やさしさが始まる。」
                 </div>
               </div>
 
-              <div class="grid grid-cols-2 gap-4">
-                <!-- Unknown を太宰 治に置換（PD） -->
-                <div class="relative rounded-2xl p-4 border" style="background:#111827; color:#F9FAFB; font-family: ui-monospace, SFMono-Regular, Menlo, monospace;">
+              <!-- 小さめカード：モバイル1列 / SM以上2列、等高化 -->
+              <div class="grid auto-rows-fr gap-3 sm:gap-4 sm:grid-cols-2">
+                <div
+                  class="relative rounded-2xl p-4 border overflow-hidden"
+                  style="background:#111827; color:#F9FAFB; font-family: ui-monospace, SFMono-Regular, Menlo, monospace;"
+                >
                   <div class="absolute inset-0 gh-grain pointer-events-none rounded-2xl opacity-40"></div>
                   <div class="text-[10px] opacity-70 mb-1">太宰 治『走れメロス』</div>
-                  <div class="text-sm font-semibold">メロスは激怒した。</div>
+                  <div class="text-sm font-semibold break-words">メロスは激怒した。</div>
                 </div>
-                <div class="relative rounded-2xl p-4 border gh-paper" style="color:#065F46; font-family: var(--font-sans);">
+
+                <div
+                  class="relative rounded-2xl p-4 border gh-paper overflow-hidden"
+                  style="color:#065F46; font-family: var(--font-sans);"
+                >
                   <div class="absolute inset-0 gh-grain pointer-events-none rounded-2xl"></div>
                   <div class="text-[10px] opacity-70 mb-1">川端 康成『雪国』</div>
-                  <div class="text-sm font-semibold">国境の長いトンネルを抜けると雪国であった。</div>
+                  <div class="text-sm font-semibold break-words">国境の長いトンネルを抜けると雪国であった。</div>
                 </div>
               </div>
 
-              <p class="text-xs opacity-60 font-sans">* 入力内容に合わせてバランスよくレイアウトされます</p>
+              <p class="text-xs opacity-60 font-sans content-readable mx-auto">
+                * 入力内容に合わせてバランスよくレイアウトされます
+              </p>
             </div>
           </div>
         </div>
@@ -73,55 +80,55 @@
     </div>
 
     <!-- How it works（3ステップ） -->
-    <section id="how" class="scroll-mt-24 py-12 md:py-14">
-      <h2 class="text-2xl md:text-3xl font-bold text-center font-serif gh-underline">使い方はシンプル</h2>
+    <section id="how" class="scroll-mt-24 py-10 sm:py-12 md:py-14">
+      <h2 class="text-fluid-2xl font-bold text-center font-serif gh-underline">使い方はシンプル</h2>
       <p class="text-center opacity-70 mt-2 font-sans">5分で “あなたの本棚” ができあがる</p>
 
-      <div class="mt-8 grid gap-4 md:grid-cols-3">
+      <div class="mt-8 grid gap-4 sm:gap-5 md:grid-cols-3">
         <%[
           {n:"1", title:"一節を入力", body:"本文・著者・タイトルをサッと記録"},
           {n:"2", title:"書誌を補完", body:"「書籍を検索」で書影や出版情報を取得"},
           {n:"3", title:"彩って保存", body:"背景・文字色・フォントを選んでカード化"}
         ].each do |s| %>
-          <div class="rounded-2xl gh-glass p-6 hover-float">
+          <div class="rounded-2xl gh-glass p-5 sm:p-6 hover-float">
             <div class="size-8 rounded-full bg-base-300 flex items-center justify-center font-bold"><%= s[:n] %></div>
             <h3 class="mt-3 font-bold text-lg font-sans"><%= s[:title] %></h3>
-            <p class="opacity-80 mt-1 text-sm font-sans"><%= s[:body] %></p>
+            <p class="opacity-80 mt-1 text-sm font-sans content-readable"><%= s[:body] %></p>
           </div>
         <% end %>
       </div>
 
       <div class="mt-6 text-center">
-        <%= link_to "詳しい使い方を見る →", guide_path, class: "link link-primary" %>
+        <%= link_to "詳しい使い方を見る →", guide_path, class: "link link-primary tap-target" %>
       </div>
     </section>
 
     <!-- Features -->
-    <section id="features" class="scroll-mt-24 py-12 md:py-14">
-      <h2 class="text-2xl md:text-3xl font-bold text-center font-serif gh-underline">QuoteCanvas の特徴</h2>
+    <section id="features" class="scroll-mt-24 py-10 sm:py-12 md:py-14">
+      <h2 class="text-fluid-2xl font-bold text-center font-serif gh-underline">QuoteCanvas の特徴</h2>
       <p class="text-center opacity-70 mt-2 font-sans">“続けたくなる理由”がここに</p>
 
-      <div class="mt-8 grid gap-6 md:grid-cols-3">
+      <div class="mt-8 grid gap-5 sm:gap-6 md:grid-cols-3">
         <%[
           {icon:"📌", title:"秒速で記録",  body:"忘れないうちに保存。最低限の入力でOK。"},
           {icon:"🧠", title:"思考ログ",    body:"気づきや連想を時系列に残し、後で辿れる。"},
           {icon:"🎨", title:"カードとして美しい", body:"色・フォントを自由に。眺める体験が楽しい。"}
         ].each do |f| %>
-          <div class="rounded-2xl gh-glass p-6 hover-float">
+          <div class="rounded-2xl gh-glass p-5 sm:p-6 hover-float">
             <div class="text-3xl"><%= f[:icon] %></div>
             <h3 class="mt-3 font-bold text-xl font-sans"><%= f[:title] %></h3>
-            <p class="opacity-80 mt-2 text-sm font-sans"><%= f[:body] %></p>
+            <p class="opacity-80 mt-2 text-sm font-sans content-readable"><%= f[:body] %></p>
           </div>
         <% end %>
       </div>
     </section>
 
     <!-- Gallery -->
-    <section id="gallery" class="scroll-mt-24 py-12 md:py-14">
-      <h2 class="text-2xl md:text-3xl font-bold text-center font-serif gh-underline">カード・ギャラリー</h2>
+    <section id="gallery" class="scroll-mt-24 py-10 sm:py-12 md:py-14">
+      <h2 class="text-fluid-2xl font-bold text-center font-serif gh-underline">カード・ギャラリー</h2>
       <p class="text-center opacity-70 mt-2 font-sans">“言葉の表情”は、色とフォントで変わる</p>
 
-      <div class="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      <div class="mt-8 grid gap-5 sm:gap-6 sm:grid-cols-2 lg:grid-cols-3">
         <% samples = [
           {bg:"#FDF2F8", fg:"#4A044E", font:"var(--font-serif)",    meta:"与謝野晶子『みだれ髪』", body:"その手をば柔らかにして我に触れよ"},
           {bg:"#111827", fg:"#F9FAFB", font:"ui-monospace,SFMono-Regular,Menlo,monospace", meta:"太宰 治『走れメロス』", body:"メロスは激怒した。"},
@@ -131,49 +138,51 @@
           {bg:"#F3F4F6", fg:"#111827", font:"var(--font-serif)",     meta:"宮沢 賢治『雨ニモマケズ』", body:"雨ニモマケズ 風ニモマケズ"}
         ] %>
         <% samples.each do |c| %>
-          <div class="relative rounded-2xl p-6 border"
+          <div class="relative rounded-2xl p-5 sm:p-6 border overflow-hidden"
                style="background:<%= c[:bg] %>; color:<%= c[:fg] %>; font-family:<%= c[:font] %>;">
             <div class="absolute inset-0 gh-grain pointer-events-none rounded-2xl"></div>
             <div class="text-[11px] opacity-70 mb-1 font-sans"><%= c[:meta] %></div>
-            <div class="text-lg font-semibold leading-relaxed"><%= c[:body] %></div>
+            <div class="text-base sm:text-lg font-semibold leading-relaxed break-words"><%= c[:body] %></div>
           </div>
         <% end %>
       </div>
     </section>
 
     <!-- Roadmap -->
-    <section id="roadmap" class="scroll-mt-24 py-12 md:py-14">
-      <h2 class="text-2xl md:text-3xl font-bold text-center font-serif gh-underline">これから</h2>
+    <section id="roadmap" class="scroll-mt-24 py-10 sm:py-12 md:py-14">
+      <h2 class="text-fluid-2xl font-bold text-center font-serif gh-underline">これから</h2>
       <p class="text-center opacity-70 mt-2 font-sans">MVP後に予定しているアップデート</p>
 
-      <div class="mt-8 grid gap-6 md:grid-cols-3">
+      <div class="mt-8 grid gap-5 sm:gap-6 md:grid-cols-3">
         <%[
           {title:"テーマ切替", body:"気分でダーク／ライトや配色テーマを選択。"},
           {title:"タグと検索", body:"タグ付けとキーワードで、欲しい一節を素早く発見。"},
           {title:"タグ機能の強化", body:"おすすめタグ・一括編集・並び替えで整理しやすく。"}
         ].each do |f| %>
-          <div class="rounded-2xl gh-glass p-6 hover-float">
+          <div class="rounded-2xl gh-glass p-5 sm:p-6 hover-float">
             <h3 class="font-bold text-xl font-sans"><%= f[:title] %></h3>
-            <p class="opacity-80 mt-2 text-sm font-sans"><%= f[:body] %></p>
+            <p class="opacity-80 mt-2 text-sm font-sans content-readable"><%= f[:body] %></p>
           </div>
         <% end %>
       </div>
     </section>
 
     <!-- CTA -->
-    <section class="py-12 md:py-14">
-      <div class="rounded-3xl bg-gradient-to-r from-primary to-secondary text-primary-content p-8 md:p-10 text-center shadow-xl hover-float">
-        <h2 class="font-serif text-3xl md:text-4xl font-extrabold tracking-tight">さぁ、一節をカードにしよう。</h2>
+    <section class="py-10 sm:py-12 md:py-14">
+      <div class="rounded-3xl bg-gradient-to-r from-primary to-secondary text-primary-content p-6 sm:p-8 md:p-10 text-center shadow-xl hover-float">
+        <h2 class="font-serif text-3xl md:text-4xl font-extrabold tracking-tight text-balance">さぁ、一節をカードにしよう。</h2>
         <p class="mt-2 opacity-90 font-sans">言葉を集める。自分の色で、記憶にする。</p>
+
         <div class="mt-6 flex flex-col sm:flex-row gap-3 justify-center">
           <% if user_signed_in? %>
-            <%= link_to "ダッシュボードへ", dashboard_path, class: "btn btn-secondary btn-press" %>
-            <%= link_to "＋ 一節を記録", new_passage_path, class: "btn btn-ghost btn-press underline-grow" %>
+            <%= link_to "ダッシュボードへ", dashboard_path, class: "btn btn-secondary btn-press tap-target" %>
+            <%= link_to "＋ 一節を記録", new_passage_path, class: "btn btn-ghost btn-press underline-grow tap-target" %>
           <% else %>
-            <%= link_to "無料で始める", new_user_registration_path, class: "btn btn-secondary btn-press" %>
-            <%= link_to "ログイン", new_user_session_path, class: "btn btn-ghost btn-press underline-grow" %>
+            <%= link_to "無料で始める", new_user_registration_path, class: "btn btn-secondary btn-press tap-target" %>
+            <%= link_to "ログイン", new_user_session_path, class: "btn btn-ghost btn-press underline-grow tap-target" %>
           <% end %>
         </div>
+
         <p class="mt-3 text-xs opacity-80 font-sans">データはあなた専用。共有は任意です。</p>
       </div>
     </section>
