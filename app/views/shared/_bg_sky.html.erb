@@ -1,0 +1,27 @@
+<div
+  id="bg-sky"
+  class="fixed inset-0 z-0 gh-bg <%= local_assigns[:class] %>"
+  aria-hidden="true"
+  data-turbo-permanent
+  style="
+    --aurora-alpha:<%= (local_assigns[:aurora_alpha] || 0.28) %>;
+    --vignette-alpha:<%= (local_assigns[:vignette_alpha] || 0.14) %>;
+  "
+>
+  <% if local_assigns.fetch(:show_hills, false) %>
+    <div class="absolute inset-0 gh-hills opacity-70"></div>
+  <% end %>
+
+  <% if local_assigns.fetch(:show_aurora, true) %>
+    <div class="absolute inset-0 gh-aurora"></div>
+  <% end %>
+
+  <% if local_assigns.fetch(:show_vignette, true) %>
+    <div class="absolute inset-0 gh-vignette"></div>
+  <% end %>
+
+  <% if local_assigns.fetch(:show_grain, true) %>
+    <div class="absolute inset-0 gh-grain pointer-events-none"
+         style="opacity:<%= (local_assigns[:grain_opacity] || 0.6) %>;"></div>
+  <% end %>
+</div>

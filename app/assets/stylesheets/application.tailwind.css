@@ -2,24 +2,101 @@
 @tailwind components;
 @tailwind utilities;
 
-/* ---------- Base（フォント） ---------- */
+/* =========================
+   Base（フォント/タイポ/滑らかさ）
+   ========================= */
 @layer base {
   :root {
     --font-sans: "Inter", "Noto Sans JP", system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji", sans-serif;
     --font-serif: "Shippori Mincho", "Hiragino Mincho ProN", "Hiragino Mincho Pro", YuMincho, "Yu Mincho", Georgia, serif;
+
+    /* Aurora / Vignette トークン（色と強度を変えたい時にここだけ触る） */
+    --aurora-cyan:  118 180 255;  /* #76b4ff */
+    --aurora-pink:  255 153 204;  /* #ff99cc */
+    --aurora-mint:  120 255 200;  /* #78ffc8 */
+    --aurora-alpha: .28;
+
+    --vignette-alpha: .14; /* 周辺減光の強さ（明るい背景なら 0.10〜0.18 目安） */
   }
+
   .font-sans { font-family: var(--font-sans); }
   .font-serif { font-family: var(--font-serif); }
-}
 
-/* ---------- Utilities（質感・装飾） ---------- */
-@layer utilities {
-  /* 空のグラデ（上：空色 → 下：生成り） */
-  .gh-sky {
-    background: radial-gradient(80% 60% at 50% 0%, #dff2ff 0%, #f6fbff 60%, #fbf7ef 100%);
+  html { -webkit-text-size-adjust: 100%; }
+
+  body {
+    font-family: var(--font-sans);
+    font-size: 16px;
+    line-height: 1.75;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
   }
 
-  /* 粒子ノイズ（軽量・画像不要） */
+  /* clamp で流体見出し（通常の h1/h2/h3 とユーティリティ両対応） */
+  h1, .text-fluid-3xl { font-size: clamp(1.75rem, 4.5vw + .25rem, 2.75rem); line-height: 1.2; }
+  h2, .text-fluid-2xl { font-size: clamp(1.375rem, 3.5vw + .2rem, 2rem);   line-height: 1.3; }
+  h3, .text-fluid-xl  { font-size: clamp(1.125rem, 2.8vw + .2rem, 1.5rem);  line-height: 1.35; }
+
+  /* フォーカス見やすく（Tailwindの ring と併用OK） */
+  :where(a, button, [tabindex]:not([tabindex="-1"])):focus-visible {
+    outline: 2px solid #94a3b8; /* slate-300-ish */
+    outline-offset: 2px;
+  }
+}
+
+/* =========================
+   Utilities（質感/装飾/操作性）
+   ========================= */
+@layer utilities {
+  /* --- 背景ベース（空色→生成りのやさしいグラデ） --- */
+  .gh-bg {
+    background:
+      radial-gradient(80% 60% at 50% 0%, #dff2ff 0%, #f6fbff 60%, #fbf7ef 100%);
+    /* 背景専用のレイヤーなのでレンダリング最適化 */
+    contain: paint;
+  }
+
+  /* --- オーロラ（重なり合うブラーの発光） --- */
+  .gh-aurora {
+    /* 複数の楕円ラジアルを重ねる。screenで下地と馴染ませる */
+    background:
+      radial-gradient(60% 50% at 20% 12%, rgba(var(--aurora-cyan) / var(--aurora-alpha)) 0 40%, transparent 45%),
+      radial-gradient(50% 45% at 80% 18%, rgba(var(--aurora-pink) / var(--aurora-alpha)) 0 35%, transparent 45%),
+      radial-gradient(55% 40% at 60% 80%, rgba(var(--aurora-mint) / var(--aurora-alpha)) 0 32%, transparent 45%);
+    mix-blend-mode: screen;
+    filter: blur(28px) saturate(1.05);
+    transform: translateZ(0); /* 合成コスト軽減ヒント */
+    animation: aurora-shift 16s ease-in-out infinite alternate;
+    will-change: transform, opacity;
+    pointer-events: none;
+  }
+  @keyframes aurora-shift {
+    0%   { transform: translate3d(-1%, -1%, 0) scale(1.02); opacity: .85; }
+    50%  { transform: translate3d(1%,  0.5%, 0) scale(1.04); opacity: .95; }
+    100% { transform: translate3d(0,   1%,   0) scale(1.00); opacity: .9; }
+  }
+
+  /* --- ビネット（周辺減光） --- */
+  .gh-vignette {
+    background:
+      radial-gradient(120% 110% at 50% 40%,
+        transparent 60%,
+        rgba(0 0 0 / calc(var(--vignette-alpha) * .7)) 80%,
+        rgba(0 0 0 / var(--vignette-alpha)) 100%);
+    pointer-events: none;
+  }
+  /* ダークモードでは少し強めに（daisyUIの .dark でもOK） */
+  @media (prefers-color-scheme: dark) {
+    .gh-vignette {
+      background:
+        radial-gradient(120% 110% at 50% 40%,
+          transparent 58%,
+          rgba(0 0 0 / calc(var(--vignette-alpha) * 1.1)) 80%,
+          rgba(0 0 0 / calc(var(--vignette-alpha) * 1.4)) 100%);
+    }
+  }
+
+  /* --- 粒子ノイズ（軽量・画像不要） --- */
   .gh-grain {
     background-image:
       radial-gradient(circle at 20% 20%, rgba(0,0,0,.04) 0 1px, transparent 1px 100%),
@@ -27,30 +104,10 @@
     background-size: 10px 10px, 8px 8px;
     mix-blend-mode: multiply;
     opacity: .6;
+    pointer-events: none;
   }
 
-  /* 生成りの紙 */
-  .gh-paper {
-    background: linear-gradient(#faf7f0, #f5efe2);
-  }
-
-  /* ガラスカード（@apply不使用：エディタ警告回避 & フォールバック） */
-  .gh-glass {
-    /* フォールバック（backdrop-filter非対応環境向け） */
-    background-color: rgba(255,255,255,0.7);
-    border: 1px solid rgba(17,24,39,0.08);
-    box-shadow:
-      0 10px 30px rgba(17,24,39,0.08),
-      inset 0 1px 0 rgba(255,255,255,0.35);
-  }
-  @supports ((-webkit-backdrop-filter: blur(18px)) or (backdrop-filter: blur(18px))) {
-    .gh-glass {
-      -webkit-backdrop-filter: blur(18px);
-      backdrop-filter: blur(18px);
-    }
-  }
-
-  /* 丘のシルエット（CSSのみ） */
+  /* --- 丘のシルエット（任意で使う時用） --- */
   .gh-hills {
     --c1: #cfe8d3; --c2: #a9d0b1; --c3: #86b594;
     background:
@@ -59,7 +116,22 @@
       radial-gradient(55% 45% at 90% 100%, var(--c3) 0 60%, transparent 61%) bottom right/60% 50% no-repeat;
   }
 
-  /* 手描き風の下線 */
+  /* --- 生成りの紙 --- */
+  .gh-paper { background: linear-gradient(#faf7f0, #f5efe2); }
+
+  /* --- ガラスカード（フォールバック → 対応環境でぼかし） --- */
+  .gh-glass {
+    background-color: rgba(255,255,255,0.7);
+    border: 1px solid rgba(17,24,39,0.08);
+    box-shadow:
+      0 10px 30px rgba(17,24,39,0.08),
+      inset 0 1px 0 rgba(255,255,255,0.35);
+  }
+  @supports ((-webkit-backdrop-filter: blur(18px)) or (backdrop-filter: blur(18px))) {
+    .gh-glass { -webkit-backdrop-filter: blur(18px); backdrop-filter: blur(18px); }
+  }
+
+  /* --- 手描き風の下線 --- */
   .gh-underline { position: relative; }
   .gh-underline::after{
     content:"";
@@ -71,7 +143,7 @@
     filter: blur(.2px);
   }
 
-  /* きらめき（控えめアニメ） */
+  /* --- きらめき（控えめアニメ） --- */
   .gh-sparkle { position: relative; }
   .gh-sparkle::after{
     content:"✦";
@@ -85,23 +157,62 @@
     60%{ transform: scale(.9) rotate(-8deg); opacity:.5; }
   }
 
-  /* ふわっと浮く */
-  .hover-float {
-    transition: transform .35s ease, box-shadow .35s ease;
-  }
-  .hover-float:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 10px 24px rgba(0,0,0,.12);
-  }
+  /* --- ふわっと浮く --- */
+  .hover-float { transition: transform .35s ease, box-shadow .35s ease; }
+  .hover-float:hover { transform: translateY(-4px); box-shadow: 0 10px 24px rgba(0,0,0,.12); }
 
-  /* やさしい風（小さく上下ゆれ） */
-  @keyframes breeze { 0%,100%{ transform: translateY(0) } 50%{ transform: translateY(-3px) } }
-  .breeze { animation: breeze 5s ease-in-out infinite; }
-
-  /* 動きを控えたいユーザー設定に配慮 */
+  /* --- 動きを控えたいユーザー設定に配慮 --- */
   @media (prefers-reduced-motion: reduce) {
     .gh-sparkle::after,
     .breeze,
-    .hover-float { animation: none !important; transition: none !important; }
+    .hover-float,
+    .gh-aurora { animation: none !important; transition: none !important; }
   }
+
+  /* =========================
+     モバイル最適化ユーティリティ
+     ========================= */
+
+  /* 改行バランス（日本語の見出し崩れ防止） */
+  .text-balance { text-wrap: balance; }
+
+  /* 読みやすい行幅に抑える（本文/説明） */
+  .content-readable { max-width: 65ch; }
+
+  /* タップ領域の最低サイズ（44pxルール） */
+  .touch-target { min-height: 44px; min-width: 44px; }
+
+  /* ノッチ/ホームバー安全域 */
+  .safe-pt { padding-top: env(safe-area-inset-top); }
+  .safe-pb { padding-bottom: env(safe-area-inset-bottom); }
+
+  /* フォーム/ボタンの足回り（daisyUIをやさしく上書き） */
+  :where(.btn){ min-height: 44px; padding-inline: 1rem; letter-spacing: .01em; }
+  :where(.input,.select,.textarea){ min-height: 44px; }
+
+  /* タッチ端末では hover 演出を無効化（誤作動防止） */
+  @media (hover: none) {
+    .hover-float:hover { transform: none; box-shadow: none; }
+  }
+
+  /* 小画面で装飾を控えめに（パフォーマンス/可読性重視） */
+  @media (max-width: 480px) {
+    .gh-grain { opacity: .35; }
+    .gh-underline::after { width: 4rem; bottom: -.3rem; }
+    .gh-glass { box-shadow: 0 8px 18px rgba(0,0,0,.08); }
+  }
+
+  /* 小画面ではガラスぼかし弱め（視認性・描画コスト） */
+  @supports ((-webkit-backdrop-filter: blur(18px)) or (backdrop-filter: blur(18px))) {
+    @media (max-width: 640px) {
+      .gh-glass { -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); }
+    }
+  }
+
+  /* カード本文の流体サイズ */
+  .card-text { font-size: clamp(1rem, 2.8vw + .2rem, 1.125rem); line-height: 1.7; }
+
+  /* 軽い揺れ（やさしい風）— 使う場合のみ付与 */
+  @keyframes breeze { 0%,100%{ transform: translateY(0) } 50%{ transform: translateY(-3px) } }
+  .breeze { animation: breeze 5s ease-in-out infinite; }
 }

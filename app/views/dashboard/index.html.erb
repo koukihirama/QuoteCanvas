@@ -1,19 +1,24 @@
-<!-- 背景：空＋丘＋粒子 -->
-<div class="fixed inset-0 -z-10 pointer-events-none gh-sky">
-  <div class="absolute inset-0 gh-hills opacity-70"></div>
-  <div class="absolute inset-0 gh-grain"></div>
-</div>
+<%# 背景はレイアウトで一度だけ描画。ここで上書き指定 %>
+<% content_for :bg do %>
+  <%= render "shared/bg_sky",
+      class: "theme-twilight",   # ← お好みで theme-dawn / theme-midnight など
+      show_hills: true,          # ← 丘を出す
+      aurora_alpha: 0.28,        # 発光の強さ（0.18〜0.32くらいで調整）
+      vignette_alpha: 0.16,      # 周辺減光
+      grain_opacity: 0.5 %>      # 粒子
+<% end %>
 
-<div class="container mx-auto max-w-7xl px-4 md:px-8 relative z-0">
+<div class="container mx-auto max-w-7xl px-4 md:px-8 relative z-10">
   <!-- Hero：やわらかい歓迎とクイックアクション -->
-  <section class="mt-2 md:mt-4">
-    <div class="rounded-3xl gh-glass p-6 md:p-8 relative overflow-hidden hover-float">
-      <!-- 光のにじみ -->
-      <div class="pointer-events-none absolute -top-24 -right-24 size-80 rounded-full bg-gradient-to-tr from-amber-200/40 to-rose-200/40 blur-3xl"></div>
+  <section class="mt-2 md:mt-4" aria-labelledby="hero-title">
+    <div class="rounded-3xl gh-glass p-6 md:p-8 relative overflow-hidden isolate hover-float">
+      <!-- 光のにじみ（isolateでカード内に閉じ込め） -->
+      <div class="pointer-events-none absolute -top-24 -right-24 size-80 rounded-full
+                  bg-gradient-to-tr from-amber-200/40 to-rose-200/40 blur-3xl"></div>
 
       <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 relative">
         <div>
-          <h1 class="text-2xl md:text-3xl font-extrabold gh-underline gh-sparkle">
+          <h1 id="hero-title" class="text-2xl md:text-3xl font-extrabold gh-underline gh-sparkle">
             こんにちは、<%= current_user.name.presence || "読者" %> さん
           </h1>
           <p class="mt-2 opacity-80">
@@ -21,18 +26,15 @@
           </p>
         </div>
         <div class="flex flex-wrap gap-2 shrink-0">
-          <%= link_to (defined?(new_passage_path) ? new_passage_path : "#"), class: "btn btn-primary breeze" do %>
+          <%= link_to new_passage_path, class: "btn btn-primary breeze" do %>
             ＋ 一節を記録
           <% end %>
 
-          <%= link_to (defined?(passages_path) ? passages_path : "#"), class: "btn btn-outline hover-float" do %>
+          <%= link_to passages_path, class: "btn btn-outline hover-float" do %>
             一覧を見る
           <% end %>
 
-          <!-- プロフィールは閲覧ページへ -->
-          <%= link_to "プロフィール", user_path(current_user), class: "btn btn-ghost hover-float" %>
-
-          <!-- 設定は別ボタンで -->
+          <%= link_to "プロフィール", profile_path, class: "btn btn-ghost hover-float" %>
           <%= link_to "アカウント設定", edit_user_registration_path, class: "btn btn-outline hover-float" %>
         </div>
       </div>
@@ -40,10 +42,10 @@
   </section>
 
   <!-- サマリ：小さな“本のカード” -->
-  <section class="mt-6 grid gap-4 sm:grid-cols-3">
+  <section class="mt-6 grid gap-4 sm:grid-cols-3" aria-label="サマリー">
     <div class="rounded-2xl gh-glass p-5 relative hover-float">
       <div class="text-sm opacity-70">あなたのカード</div>
-      <div class="text-3xl font-extrabold mt-1"><%= @passages_count %></div>
+      <div class="text-3xl font-extrabold mt-1" aria-live="polite"><%= @passages_count %></div>
     </div>
     <a href="<%= root_path %>#features" class="rounded-2xl gh-glass p-5 hover-float">
       <div class="text-sm opacity-70">カスタマイズ</div>
@@ -55,39 +57,40 @@
     <% end %>
   </section>
 
-  <!-- 最近の一節：カード棚（3列） -->
-  <section class="mt-10">
+  <!-- 最近の一節 -->
+  <section class="mt-10" aria-labelledby="recent-title">
     <div class="flex items-end justify-between">
       <div>
-        <h2 class="text-xl md:text-2xl font-bold gh-underline">最近の記録</h2>
+        <h2 id="recent-title" class="text-xl md:text-2xl font-bold gh-underline">最近の記録</h2>
         <p class="opacity-70 text-sm mt-1">直近3枚のカードをピックアップ</p>
       </div>
-      <%= link_to (defined?(passages_path) ? passages_path : "#"), class: "link link-primary" do %>
+      <%= link_to passages_path, class: "link link-primary" do %>
         すべて見る →
       <% end %>
     </div>
 
     <% if @recent_passages.any? %>
-  <div class="mt-5 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-    <% @recent_passages.each do |p| %>
-      <%= render "passages/card", passage: p, size: :mini %>
+      <div class="mt-5 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        <% @recent_passages.each do |p| %>
+          <%= render "passages/card", passage: p, size: :mini %>
+        <% end %>
+      </div>
+    <% else %>
+      <div class="mt-6 rounded-3xl gh-glass p-10 text-center hover-float">
+        <div class="text-4xl mb-2">🌿</div>
+        <p class="font-semibold">まだカードがありません</p>
+        <p class="opacity-70 text-sm mt-1">心に残った一文を、最初の1枚に。</p>
+        <div class="mt-4">
+          <%= link_to new_passage_path, class: "btn btn-primary breeze" do %>
+            ＋ 一節を記録
+          <% end %>
+        </div>
+      </div>
     <% end %>
-  </div>
-<% else %>
-  <div class="mt-6 rounded-3xl gh-glass p-10 text-center hover-float">
-    <div class="text-4xl mb-2">🌿</div>
-    <p class="font-semibold">まだカードがありません</p>
-    <p class="opacity-70 text-sm mt-1">心に残った一文を、最初の1枚に。</p>
-    <div class="mt-4">
-      <%= link_to (defined?(new_passage_path) ? new_passage_path : "#"), class: "btn btn-primary breeze" do %>
-        ＋ 一節を記録
-      <% end %>
-    </div>
-  </div>
-<% end %>
   </section>
 
-  <section class="mt-10 grid gap-4 md:grid-cols-3">
+  <!-- 使い方の3ポイント -->
+  <section class="mt-10 grid gap-4 md:grid-cols-3" aria-label="使い方">
     <div class="rounded-2xl gh-glass p-6 hover-float">
       <div class="text-2xl">✍️</div>
       <div class="font-bold mt-2">書き留める</div>
