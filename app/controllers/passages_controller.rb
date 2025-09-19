@@ -1,12 +1,11 @@
 class PassagesController < ApplicationController
   before_action :authenticate_user!
-  before_action :set_passage,   only: %i[show edit update destroy]
-  before_action :ensure_owner!, only: %i[edit update destroy]
+  before_action :set_passage, only: %i[show edit update destroy]
 
   def index
     @passages = current_user.passages
-                  .includes(:book_info, :customization)
-                  .order(created_at: :desc)
+                           .includes(:book_info, :customization)
+                           .order(created_at: :desc)
   end
 
   def new
@@ -19,13 +18,8 @@ class PassagesController < ApplicationController
     normalize_nested_keys!
 
     @passage = current_user.passages.new
-    # ★ book_info_attributes が来てたら先に build
-    if @passage.book_info.nil? && params.dig(:passage, :book_info_attributes).present?
-      @passage.build_book_info
-    end
-    if @passage.customization.nil? && params.dig(:passage, :customization_attributes).present?
-      @passage.build_customization(user: current_user)
-    end
+    @passage.build_book_info if @passage.book_info.nil? && params.dig(:passage, :book_info_attributes).present?
+    @passage.build_customization(user: current_user) if @passage.customization.nil? && params.dig(:passage, :customization_attributes).present?
 
     @passage.assign_attributes(passage_params)
     @passage.customization&.user ||= current_user
@@ -43,12 +37,8 @@ class PassagesController < ApplicationController
   def update
     normalize_nested_keys!
 
-    if @passage.book_info.nil? && params.dig(:passage, :book_info_attributes).present?
-      @passage.build_book_info
-    end
-    if @passage.customization.nil? && params.dig(:passage, :customization_attributes).present?
-      @passage.build_customization(user: current_user)
-    end
+    @passage.build_book_info if @passage.book_info.nil? && params.dig(:passage, :book_info_attributes).present?
+    @passage.build_customization(user: current_user) if @passage.customization.nil? && params.dig(:passage, :customization_attributes).present?
 
     Rails.logger.info("[passages#update] book_info_attrs=#{params.dig(:passage, :book_info_attributes).inspect}")
 
@@ -80,33 +70,61 @@ class PassagesController < ApplicationController
   private
 
   def set_passage
+    # 自分のレコード限定。存在しなければ 404
     @passage = current_user.passages.find(params[:id])
   end
 
-  def ensure_owner!
-    return if @passage.user_id == current_user.id
-    redirect_to @passage, alert: "これはあなたのカードじゃないみたい…"
-  end
-
-  # 「passage[book_info]」で来ても受けられるように寄せ替え
+  # ネストキーを attr 名に揃え、空値は nil に、全空なら破棄
   def normalize_nested_keys!
-    if (c = params.dig(:passage, :customization)).present? && params.dig(:passage, :customization_attributes).blank?
-      params[:passage][:customization_attributes] = c
+    psg = params[:passage]
+    return unless psg.is_a?(ActionController::Parameters)
+
+    # 旧キー -> *_attributes に寄せ替え
+    psg[:customization_attributes] ||= psg.delete(:customization) if psg[:customization].present?
+    psg[:book_info_attributes]     ||= psg.delete(:book_info)     if psg[:book_info].present?
+
+    # ---- book_info ----
+    if (b = psg[:book_info_attributes]).present?
+      b = b.is_a?(ActionController::Parameters) ? b.dup : ActionController::Parameters.new(b)
+
+      # published_date -> published_on / source_id -> api_id に統一
+      b[:published_on] ||= b.delete(:published_date) || b.delete("published_date")
+      b[:api_id]       ||= b.delete(:source_id)      || b.delete("source_id")
+
+      # 空文字は nil に（DBの NULL として扱う）
+      %i[title author published_on isbn cover_url publisher source api_id].each do |k|
+        b[k] = nil if b[k].is_a?(String) && b[k].blank?
+      end
+
+      # すべて空ならネストごと捨てる（判定は to_unsafe_h）
+      data = b.respond_to?(:to_unsafe_h) ? b.to_unsafe_h : b.to_h
+      if data.except(:id, "id").values.compact.blank?
+        psg.delete(:book_info_attributes)
+      else
+        psg[:book_info_attributes] = b
+      end
     end
-    if (b = params.dig(:passage, :book_info)).present? && params.dig(:passage, :book_info_attributes).blank?
-      params[:passage][:book_info_attributes] = b
+
+    # ---- customization ----
+    if (c = psg[:customization_attributes]).present?
+      c = c.is_a?(ActionController::Parameters) ? c.dup : ActionController::Parameters.new(c)
+      %i[font color bg_color].each { |k| c[k] = nil if c[k].is_a?(String) && c[k].blank? }
+
+      data = c.respond_to?(:to_unsafe_h) ? c.to_unsafe_h : c.to_h
+      if data.except(:id, "id").values.compact.blank?
+        psg.delete(:customization_attributes)
+      else
+        psg[:customization_attributes] = c
+      end
     end
   end
 
   def passage_params
-  params.require(:passage).permit(
-    :content, :title, :author,
-    :bg_color, :text_color, :font_family,
-    customization_attributes: [ :id, :font, :color, :bg_color ],
-    book_info_attributes: [
-      :id, :title, :author, :published_date, :isbn,
-      :cover_url, :publisher, :page_count, :source, :source_id
-    ]
-  )
-end
+    params.require(:passage).permit(
+      :content, :title, :author,
+      :bg_color, :text_color, :font_family,
+      customization_attributes: %i[id font color bg_color],
+      book_info_attributes:     %i[id title author published_on isbn cover_url publisher source api_id]
+    )
+  end
 end

@@ -14,16 +14,7 @@
       },
       class: "space-y-6" do |f| %>
 
-  <% if passage.errors.any? %>
-    <div class="alert alert-error">
-      <span>入力にエラーがあるよ（<%= passage.errors.count %>件）</span>
-      <ul class="list-disc pl-5">
-        <% passage.errors.full_messages.each do |m| %>
-          <li><%= m %></li>
-        <% end %>
-      </ul>
-    </div>
-  <% end %>
+  <%= render "shared/form_errors", object: f.object %>
 
   <%# ====== 2カラム（md以上で分割 / スマホは1カラム） ====== %>
   <div class="grid gap-6 md:grid-cols-2 items-start">
