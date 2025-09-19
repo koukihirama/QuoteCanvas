@@ -1,0 +1,28 @@
+ja:
+  activerecord:
+    models:
+      passage: 一節
+      thought_log: 思考ログ
+      user: ユーザー
+    attributes:
+      passage:
+        body: 本文
+        author: 著者
+        title: タイトル
+      thought_log:
+        body: メモ
+      user:
+        current_password: 現在のパスワード
+        name: ユーザー名
+        email: メールアドレス
+        password: パスワード
+        password_confirmation: パスワード（確認）
+
+  errors:
+    format: "%{attribute}%{message}"
+    messages:
+      blank: を入力してください
+      too_short: は%{count}文字以上で入力してください
+      too_long: は%{count}文字以内で入力してください
+      taken: は既に使用されています
+      invalid: が正しくありません

@@ -1,0 +1,14 @@
+<%# 用法: render "shared/form_errors", object: f.object %>
+<% obj = local_assigns[:object] %>
+<% if obj && obj.errors.any? %>
+  <div class="alert alert-error my-3" role="alert" aria-live="assertive">
+    <div class="font-bold">
+      入力内容にエラーがあります（<%= obj.errors.count %>件）
+    </div>
+    <ul class="list-disc pl-6 mt-2">
+      <% obj.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+    </ul>
+  </div>
+<% end %>
