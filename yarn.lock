@@ -44,7 +44,7 @@
 
 "@esbuild/linux-arm64@0.25.8":
   version "0.25.8"
-  resolved "https://registry.yarnpkg.com/@esbuild/linux-arm64/-/linux-arm64-0.25.8.tgz#a4209efadc0c2975716458484a4e90c237c48ae9"
+  resolved "https://registry.npmjs.org/@esbuild/linux-arm64/-/linux-arm64-0.25.8.tgz"
   integrity sha512-WIgg00ARWv/uYLU7lsuDK00d/hHSfES5BzdWAdAig1ioV5kaFNrtK8EqGcUBJhYqotlUByUKz5Qo6u8tt7iD/w==
 
 "@esbuild/linux-arm@0.25.8":
@@ -134,12 +134,12 @@
 
 "@hotwired/stimulus@^3.2.2":
   version "3.2.2"
-  resolved "https://registry.yarnpkg.com/@hotwired/stimulus/-/stimulus-3.2.2.tgz#071aab59c600fed95b97939e605ff261a4251608"
+  resolved "https://registry.npmjs.org/@hotwired/stimulus/-/stimulus-3.2.2.tgz"
   integrity sha512-eGeIqNOQpXoPAIP7tC1+1Yc1yl1xnwYqg+3mzqxyrbE5pg5YFBZcA6YoTiByJB6DKAEsiWtl6tjTJS4IYtbB7A==
 
 "@hotwired/turbo-rails@^8.0.16":
   version "8.0.16"
-  resolved "https://registry.yarnpkg.com/@hotwired/turbo-rails/-/turbo-rails-8.0.16.tgz#096f3bec8c3c04d4aac4dd0f75305c67b3db3501"
+  resolved "https://registry.npmjs.org/@hotwired/turbo-rails/-/turbo-rails-8.0.16.tgz"
   integrity sha512-Yxiy2x+N3eOIEDokvLzSrd08aI5RDKnFYDQFl2J/LuMEWTtPdY7oNP0F/gv/sSe5AV23Lwz4FitG/uNFXNM5tA==
   dependencies:
     "@hotwired/turbo" "^8.0.13"
@@ -147,22 +147,22 @@
 
 "@hotwired/turbo@^8.0.13":
   version "8.0.13"
-  resolved "https://registry.yarnpkg.com/@hotwired/turbo/-/turbo-8.0.13.tgz#ab35fda9d358432c8a872a833844b38cccb8c25b"
+  resolved "https://registry.npmjs.org/@hotwired/turbo/-/turbo-8.0.13.tgz"
   integrity sha512-M7qXUqcGab6G5PKOiwhgbByTtrPgKPFCTMNQ52QhzUEXEqmp0/ApEguUesh/FPiUjrmFec+3lq98KsWnYY2C7g==
 
 "@rails/actioncable@>=7.0":
   version "8.0.200"
-  resolved "https://registry.yarnpkg.com/@rails/actioncable/-/actioncable-8.0.200.tgz#1d27d9d55e45266e061190db045925e0b4d53d6b"
+  resolved "https://registry.npmjs.org/@rails/actioncable/-/actioncable-8.0.200.tgz"
   integrity sha512-EDqWyxck22BHmv1e+mD8Kl6GmtNkhEPdRfGFT7kvsv1yoXd9iYrqHDVAaR8bKmU/syC5eEZ2I5aWWxtB73ukMw==
 
-daisyui@^5.0.50:
-  version "5.0.50"
-  resolved "https://registry.yarnpkg.com/daisyui/-/daisyui-5.0.50.tgz#764da931c9cdad22114e054c8af6d410326cc226"
-  integrity sha512-c1PweK5RI1C76q58FKvbS4jzgyNJSP6CGTQ+KkZYzADdJoERnOxFoeLfDHmQgxLpjEzlYhFMXCeodQNLCC9bow==
+daisyui@^5.1.13:
+  version "5.1.13"
+  resolved "https://registry.npmjs.org/daisyui/-/daisyui-5.1.13.tgz"
+  integrity sha512-KWPF/4R+EHTJRqKZFNmSDPfAZ5xeS6YWB/2kS7Y6wGKg+atscUi2DOp6HoDD/OgGML0PJTtTpgwpTfeHVfjk7w==
 
 esbuild@^0.25.8:
   version "0.25.8"
-  resolved "https://registry.yarnpkg.com/esbuild/-/esbuild-0.25.8.tgz#482d42198b427c9c2f3a81b63d7663aecb1dda07"
+  resolved "https://registry.npmjs.org/esbuild/-/esbuild-0.25.8.tgz"
   integrity sha512-vVC0USHGtMi8+R4Kz8rt6JhEWLxsv9Rnu/lGYbPR8u47B+DCBksq9JarW0zOO7bs37hyOK1l2/oqtbciutL5+Q==
   optionalDependencies:
     "@esbuild/aix-ppc64" "0.25.8"
@@ -194,5 +194,5 @@ esbuild@^0.25.8:
 
 tailwindcss@^4.1.11:
   version "4.1.11"
-  resolved "https://registry.yarnpkg.com/tailwindcss/-/tailwindcss-4.1.11.tgz#799af3e98c19c5baaefafc6e0c16304a0e684854"
+  resolved "https://registry.npmjs.org/tailwindcss/-/tailwindcss-4.1.11.tgz"
   integrity sha512-2E9TBm6MDD/xKYe+dvJZAmg3yxIEDNRc0jwlNyDg/4Fil2QcSLjFKGVff0lAf1jjeaArlG/M75Ey/EYr/OJtBA==

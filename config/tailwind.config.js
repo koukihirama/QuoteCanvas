@@ -1,26 +1,23 @@
 const defaultTheme = require('tailwindcss/defaultTheme')
 
+/** @type {import('tailwindcss').Config} */
 module.exports = {
+  darkMode: 'class', // OSのダークに引っ張られない
+  // ※ 将来、[data-theme="dark"]でもdark:を効かせたいなら↓も可
+  // darkMode: ['class', '[data-theme="dark"]'],
   content: [
     './public/*.html',
+    './app/views/**/*.{erb,html,haml,slim}',
     './app/helpers/**/*.rb',
-    './app/javascript/**/*.js',
-    './app/views/**/*.{erb,haml,html,slim}'
+    './app/javascript/**/*.{js,ts}',
   ],
   theme: {
     extend: {
-      fontFamily: {
-        sans: ['Inter var', ...defaultTheme.fontFamily.sans],
-      },
+      fontFamily: { sans: ['Inter var', ...defaultTheme.fontFamily.sans] },
     },
   },
+  plugins: [require('daisyui')],
   daisyui: {
-    themes: ["light", "dark", "cupcake"], // 使用するテーマを設定
+    themes: ['light'], // v5で確実に存在するテーマに固定
   },
-  plugins: [
-    // require('@tailwindcss/forms'),
-    // require('@tailwindcss/typography'),
-    // require('@tailwindcss/container-queries'),
-    require('daisyui'),
-  ]
 }
