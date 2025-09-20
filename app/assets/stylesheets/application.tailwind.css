@@ -119,8 +119,10 @@
   /* --- 生成りの紙 --- */
   .gh-paper { background: linear-gradient(#faf7f0, #f5efe2); }
 
-  /* --- ガラスカード（フォールバック → 対応環境でぼかし） --- */
-  .gh-glass {
+  /* --- ガラスカード（フォールバック → 対応環境でぼかし）
+       ※ gh-surface も同じ見た目にして共用 --- */
+  .gh-glass,
+  .gh-surface {
     background-color: rgba(255,255,255,0.7);
     border: 1px solid rgba(17,24,39,0.08);
     box-shadow:
@@ -128,7 +130,8 @@
       inset 0 1px 0 rgba(255,255,255,0.35);
   }
   @supports ((-webkit-backdrop-filter: blur(18px)) or (backdrop-filter: blur(18px))) {
-    .gh-glass { -webkit-backdrop-filter: blur(18px); backdrop-filter: blur(18px); }
+    .gh-glass,
+    .gh-surface { -webkit-backdrop-filter: blur(18px); backdrop-filter: blur(18px); }
   }
 
   /* --- 手描き風の下線 --- */
@@ -199,13 +202,15 @@
   @media (max-width: 480px) {
     .gh-grain { opacity: .35; }
     .gh-underline::after { width: 4rem; bottom: -.3rem; }
-    .gh-glass { box-shadow: 0 8px 18px rgba(0,0,0,.08); }
+    .gh-glass,
+    .gh-surface { box-shadow: 0 8px 18px rgba(0,0,0,.08); }
   }
 
   /* 小画面ではガラスぼかし弱め（視認性・描画コスト） */
   @supports ((-webkit-backdrop-filter: blur(18px)) or (backdrop-filter: blur(18px))) {
     @media (max-width: 640px) {
-      .gh-glass { -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); }
+      .gh-glass,
+      .gh-surface { -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); }
     }
   }
 
@@ -215,4 +220,9 @@
   /* 軽い揺れ（やさしい風）— 使う場合のみ付与 */
   @keyframes breeze { 0%,100%{ transform: translateY(0) } 50%{ transform: translateY(-3px) } }
   .breeze { animation: breeze 5s ease-in-out infinite; }
+}
+
+/* === 追加：明るい面では常にテーマの文字色を使う（白抜け防止） === */
+@layer utilities {
+  .gh-surface { @apply text-base-content; }
 }
