@@ -1,3 +1,4 @@
+<%# ====== 色・フォントの初期スタイル ====== %>
 <% style_bg   = passage.customization&.bg_color.presence   || passage.bg_color.presence    || "#F9FAFB" %>
 <% style_text = passage.customization&.color.presence      || passage.text_color.presence  || "#111827" %>
 <% style_font = passage.customization&.font.presence       || passage.font_family.presence || "var(--font-serif)" %>
@@ -19,9 +20,7 @@
   <%# ====== 2カラム（md以上で分割 / スマホは1カラム） ====== %>
   <div class="grid gap-6 md:grid-cols-2 items-start">
     <%# ================= 左：入力カラム ================= %>
-    <%# ↓ このブロックに book-search コントローラを掛ける %>
     <div class="space-y-6">
-
       <!-- 本文 -->
       <div>
         <%= f.label :content, "一節本文", class: "block font-semibold mb-1" %>
@@ -30,7 +29,7 @@
               data: { preview_target: "content" } %>
       </div>
 
-      <!-- タイトル / 著者（入力で自動候補を出す） -->
+      <!-- タイトル / 著者 -->
       <div class="grid gap-4 md:grid-cols-2">
         <div>
           <%= f.label :title, "作品タイトル", class: "block font-semibold mb-1" %>
@@ -54,22 +53,17 @@
         </div>
       </div>
 
-      <!-- 書籍検索アクション（モーダル／クリア）＋ ISBN 直入力（任意） -->
+      <!-- 書籍検索アクション（モーダル／クリア）＋ ISBN -->
       <div class="flex flex-col gap-2">
         <div class="flex gap-2">
           <button type="button"
                   class="btn btn-outline btn-sm"
-                  data-action="click->book-search#open">
-            🔎 書籍を検索してセット
-          </button>
+                  data-action="click->book-search#open">🔎 書籍を検索してセット</button>
           <button type="button"
                   class="btn btn-ghost btn-sm"
-                  data-action="click->book-search#clear">
-            クリア
-          </button>
+                  data-action="click->book-search#clear">クリア</button>
         </div>
 
-        <%# BookInfo 側の ISBN を“検索兼ねる入力”として露出（任意） %>
         <div class="max-w-xs">
           <label class="label"><span class="label-text text-xs">ISBN（任意。入力で候補表示）</span></label>
           <%= f.fields_for :book_info do |bf| %>
@@ -82,7 +76,7 @@
         </div>
       </div>
 
-      <%# インライン候補の表示エリア（クリックでセット） %>
+      <%# インライン候補表示 %>
       <div class="mt-2" data-book-search-target="inlineResults"></div>
 
       <!-- 見た目のカスタマイズ（簡易） -->
@@ -176,29 +170,24 @@
 
       <!-- BookInfo（保存用 hidden と公開したい項目） -->
       <%= f.fields_for :book_info do |bf| %>
-  <%= bf.hidden_field :id if bf.object&.persisted? %>  <!-- これを追加 -->
-
-  <%= bf.hidden_field :title,          data: { "book-search-target": "title" } %>
-  <%= bf.hidden_field :author,         data: { "book-search-target": "author" } %>
-  <%= bf.hidden_field :published_date, data: { "book-search-target": "publishedDate" } %>
-  <%= bf.hidden_field :cover_url,      data: { "book-search-target": "coverUrl" } %>
-  <%= bf.hidden_field :publisher,      data: { "book-search-target": "publisher" } %>
-  <%= bf.hidden_field :page_count,     data: { "book-search-target": "pageCount" } %>
-  <%= bf.hidden_field :source,         data: { "book-search-target": "source" } %>
-  <%= bf.hidden_field :source_id,      data: { "book-search-target": "sourceId" } %>
-<% end %>
+        <%= bf.hidden_field :id if bf.object&.persisted? %>
+        <%= bf.hidden_field :title,          data: { "book-search-target": "title" } %>
+        <%= bf.hidden_field :author,         data: { "book-search-target": "author" } %>
+        <%= bf.hidden_field :published_date, data: { "book-search-target": "publishedDate" } %>
+        <%= bf.hidden_field :cover_url,      data: { "book-search-target": "coverUrl" } %>
+        <%= bf.hidden_field :publisher,      data: { "book-search-target": "publisher" } %>
+        <%= bf.hidden_field :page_count,     data: { "book-search-target": "pageCount" } %>
+        <%= bf.hidden_field :source,         data: { "book-search-target": "source" } %>
+        <%= bf.hidden_field :source_id,      data: { "book-search-target": "sourceId" } %>
+      <% end %>
 
       <!-- 詳細設定ページへの導線 -->
       <div class="mt-2">
         <% if passage.persisted? %>
           <% if passage.customization.present? %>
-            <%= link_to "見た目をカスタマイズ（詳細設定）",
-                  edit_passage_customization_path(passage),
-                  class: "btn btn-outline" %>
+            <%= link_to "見た目をカスタマイズ（詳細設定）", edit_passage_customization_path(passage), class: "btn btn-outline" %>
           <% else %>
-            <%= link_to "見た目をカスタマイズ（詳細設定）",
-                  new_passage_customization_path(passage),
-                  class: "btn btn-outline" %>
+            <%= link_to "見た目をカスタマイズ（詳細設定）", new_passage_customization_path(passage), class: "btn btn-outline" %>
           <% end %>
         <% else %>
           <button class="btn btn-outline" disabled>見た目をカスタマイズ（詳細設定）</button>
@@ -216,7 +205,7 @@
     </div>
 
     <%# ================= 右：PC用 sticky プレビュー ================= %>
-    <div class="hidden md:block md:sticky md:top-24">
+    <aside class="hidden md:block md:sticky md:top-24">
       <div class="mb-2">
         <h2 class="text-xl font-bold gh-underline">プレビュー</h2>
         <p class="text-sm opacity-70">入力に合わせて自動更新</p>
@@ -226,19 +215,28 @@
            class="relative rounded-2xl p-6 border gh-glass"
            style="background:<%= style_bg %>; color:<%= style_text %>; font-family:<%= style_font %>;">
         <div class="absolute inset-0 gh-grain pointer-events-none rounded-2xl"></div>
-
         <div id="preview-meta-desktop" class="text-[11px] opacity-70 mb-1 font-sans">
           <% meta = [f.object.author.presence, f.object.title.presence&.yield_self { |t| "『#{t}』" }].compact.join(" ") %>
           <%= meta %>
         </div>
-        <div id="preview-content-desktop"
-             class="text-lg md:text-2xl font-semibold leading-relaxed whitespace-pre-wrap"></div>
+        <div id="preview-content-desktop" class="text-lg md:text-2xl font-semibold leading-relaxed whitespace-pre-wrap"></div>
       </div>
-    </div>
-  </div>
+    </aside>
+  </div> <!-- /grid -->
 <% end %>
 
-<%# ================= モバイル用：下固定ミニプレビューバー ================= %>
+<%# ====== デスクトップ用：追従ミニプレビュー FAB（右下に出たり消えたり） ====== %>
+<div id="preview-fab" class="hidden md:block fixed bottom-6 right-6 z-40 opacity-0 pointer-events-none transition-opacity duration-200">
+  <div id="preview-card-fab"
+       class="relative rounded-xl border gh-glass p-4 qc-fab shadow-xl"
+       style="background:<%= style_bg %>; color:<%= style_text %>; font-family:<%= style_font %>;">
+    <div class="absolute inset-0 gh-grain pointer-events-none rounded-xl"></div>
+    <div id="preview-meta-fab" class="text-[10px] opacity-70 mb-1 font-sans"></div>
+    <div id="preview-content-fab" class="text-sm font-semibold leading-snug clamp-3"></div>
+  </div>
+</div>
+
+<%# ====== モバイル用：下固定ミニプレビューバー ====== %>
 <div class="md:hidden fixed inset-x-0 bottom-0 z-40">
   <div class="mx-auto max-w-7xl px-4" style="padding-bottom: env(safe-area-inset-bottom);">
     <div class="rounded-xl border gh-glass p-3 shadow-lg backdrop-blur">
@@ -254,10 +252,9 @@
     </div>
   </div>
 </div>
-<%# モバイルで固定バーに隠れないよう余白を確保 %>
 <div class="h-28 md:hidden"></div>
 
-<%# ================= 書籍検索モーダル（必要なら使う） ================= %>
+<%# ====== 書籍検索モーダル（そのまま） ====== %>
 <dialog id="book-search-modal" class="modal">
   <div class="modal-box max-w-3xl">
     <h3 class="font-bold text-lg mb-4">書籍検索</h3>
@@ -279,37 +276,46 @@
   </form>
 </dialog>
 
-<%# ================= プレビュー反映スクリプト（PC/モバイル対応） ================= %>
-<script>
+<%# ====== 追加スタイル（FABサイズ＆クランプ） ====== %>
+<style nonce="<%= content_security_policy_nonce %>">
+  .qc-fab{ box-sizing:border-box; width: 320px; max-width: calc(100vw - 24px); height: 132px; }
+  @media (max-width: 1200px){ .qc-fab{ width: 300px; height: 124px; } }
+  .clamp-3{-webkit-line-clamp:3;display:-webkit-box;-webkit-box-orient:vertical;overflow:hidden}
+</style>
+
+<%# ====== プレビュー反映 + “見失ったらFAB”表示制御 ====== %>
+<script nonce="<%= content_security_policy_nonce %>">
 (function(){
   function setupPreview(){
     const form = document.getElementById("passage-form") || document.querySelector("form");
-    if (!form || form.dataset.previewBound === "1") return; // 二重バインド防止
+    if (!form || form.dataset.previewBound === "1") return;
     form.dataset.previewBound = "1";
 
-    // === ここから下は元の処理をそのまま移植（内容は変えない） ===
-
     // 入力
-    const title  = form.querySelector('[data-preview-target="title"]');
-    const author = form.querySelector('[data-preview-target="author"]');
-    const body   = form.querySelector('[data-preview-target="content"]');
-    const fontSel= form.querySelector('[data-preview-target="font"]');
-    const textInp= form.querySelector('[data-preview-target="textColor"]');
-    const bgInp  = form.querySelector('[data-preview-target="bgColor"]');
-    const textPick = form.querySelector('input[data-colorpicker="textColor"]');
-    const bgPick   = form.querySelector('input[data-colorpicker="bgColor"]');
+    const title   = form.querySelector('[data-preview-target="title"]');
+    const author  = form.querySelector('[data-preview-target="author"]');
+    const body    = form.querySelector('[data-preview-target="content"]');
+    const fontSel = form.querySelector('[data-preview-target="font"]');
+    const textInp = form.querySelector('[data-preview-target="textColor"]');
+    const bgInp   = form.querySelector('[data-preview-target="bgColor"]');
+    const textPick= form.querySelector('input[data-colorpicker="textColor"]');
+    const bgPick  = form.querySelector('input[data-colorpicker="bgColor"]');
 
-    // PC
+    // プレビュー要素（PC / Mobile / FAB）
     const cardD = document.getElementById('preview-card-desktop');
     const metaD = document.getElementById('preview-meta-desktop');
     const contD = document.getElementById('preview-content-desktop');
 
-    // モバイル
     const cardM = document.getElementById('preview-card-mobile');
     const metaM = document.getElementById('preview-meta-mobile');
     const contM = document.getElementById('preview-content-mobile');
 
-    const anyCard = cardD || cardM;
+    const fabWrap = document.getElementById('preview-fab');
+    const cardF = document.getElementById('preview-card-fab');
+    const metaF = document.getElementById('preview-meta-fab');
+    const contF = document.getElementById('preview-content-fab');
+
+    const anyCard = cardD || cardM || cardF;
     const FALLBACK = {
       font: (anyCard && anyCard.style.fontFamily) || "var(--font-serif)",
       text: (anyCard && anyCard.style.color)      || "#111827",
@@ -328,24 +334,20 @@
       const meta = [a, t ? `『${t}』` : null].filter(Boolean).join(" ");
       if (metaD) metaD.textContent = meta;
       if (metaM) metaM.textContent = meta;
+      if (metaF) metaF.textContent = meta;
     }
     function updateBody(){
       const v = (body?.value || "");
       if (contD) contD.textContent = v;
       if (contM) contM.textContent = v;
+      if (contF) contF.textContent = v;
     }
-    function applyStyleBoth(){ setCardStyle(cardD); setCardStyle(cardM); }
+    function applyStyleAll(){ setCardStyle(cardD); setCardStyle(cardM); setCardStyle(cardF); }
 
     function bindPair(textInput, colorInput){
       if (!textInput || !colorInput) return;
-      colorInput.addEventListener("input", e => {
-        textInput.value = e.target.value;
-        applyStyleBoth();
-      });
-      textInput.addEventListener("input", e => {
-        if (/^#/.test(e.target.value)) colorInput.value = e.target.value;
-        applyStyleBoth();
-      });
+      colorInput.addEventListener("input", e => { textInput.value = e.target.value; applyStyleAll(); });
+      textInput.addEventListener("input", e => { if (/^#/.test(e.target.value)) colorInput.value = e.target.value; applyStyleAll(); });
     }
 
     // クイックフォント
@@ -357,20 +359,16 @@
       });
     });
 
-    function rgbToHex(rgb) {
-      const m = rgb.match(/\d+/g);
-      if (!m) return "";
-      return "#" + m.slice(0, 3).map(n => ("0" + parseInt(n, 10).toString(16)).slice(-2)).join("");
-    }
-    function saveRecent(inputEl, hex) {
+    // 最近色の維持（ローカルストレージ）
+    function rgbToHex(rgb){ const m = rgb.match(/\d+/g); if(!m) return ""; return "#" + m.slice(0,3).map(n => ("0"+parseInt(n,10).toString(16)).slice(-2)).join(""); }
+    function saveRecent(inputEl, hex){
       if (!hex || !hex.startsWith("#")) return;
       const key = inputEl === textInp ? "recent_text" : "recent_bg";
       const arr = JSON.parse(localStorage.getItem(key) || "[]").filter(v => v !== hex);
-      arr.unshift(hex);
-      localStorage.setItem(key, JSON.stringify(arr.slice(0, 8)));
+      arr.unshift(hex); localStorage.setItem(key, JSON.stringify(arr.slice(0,8)));
       renderRecent();
     }
-    function renderRecent() {
+    function renderRecent(){
       const wrapText = form.querySelector('[data-recent="textColor"]');
       const wrapBg   = form.querySelector('[data-recent="bgColor"]');
       const make = (hex, key) => {
@@ -378,70 +376,75 @@
         b.type = "button"; b.title = hex;
         b.className = "size-6 rounded-full border";
         b.style.background = hex;
-        b.dataset.colorPreset = key;
-        b.dataset.value = hex;
         b.addEventListener("click", () => {
-          const text = key === "textColor" ? textInp : bgInp;
-          const pick = key === "textColor" ? textPick : bgPick;
-          if (text) text.value = hex;
+          const inp = key === "textColor" ? textInp : bgInp;
+          const pick= key === "textColor" ? textPick : bgPick;
+          if (inp)  inp.value = hex;
           if (pick) pick.value = hex;
-          applyStyleBoth(); saveRecent(text, hex);
+          applyStyleAll(); saveRecent(inp, hex);
         });
         return b;
       };
-      if (wrapText) {
-        wrapText.innerHTML = "";
-        (JSON.parse(localStorage.getItem("recent_text") || "[]"))
-          .forEach(hex => wrapText.appendChild(make(hex, "textColor")));
-      }
-      if (wrapBg) {
-        wrapBg.innerHTML = "";
-        (JSON.parse(localStorage.getItem("recent_bg") || "[]"))
-          .forEach(hex => wrapBg.appendChild(make(hex, "bgColor")));
-      }
+      if (wrapText){ wrapText.innerHTML = ""; (JSON.parse(localStorage.getItem("recent_text") || "[]")).forEach(hex => wrapText.appendChild(make(hex,"textColor"))); }
+      if (wrapBg){   wrapBg.innerHTML = "";   (JSON.parse(localStorage.getItem("recent_bg")   || "[]")).forEach(hex => wrapBg.appendChild(make(hex,"bgColor"))); }
     }
 
     form.querySelectorAll('[data-color-preset]').forEach(btn => {
       btn.addEventListener("click", (e) => {
         const key = e.currentTarget.dataset.colorPreset;
         const val = e.currentTarget.dataset.value;
-        const text = key === "textColor" ? textInp : bgInp;
-        const pick = key === "textColor" ? textPick : bgPick;
-        if (text) text.value = val;
+        const inp = key === "textColor" ? textInp : bgInp;
+        const pick= key === "textColor" ? textPick : bgPick;
+        if (inp)  inp.value = val;
         if (pick) pick.value = val;
-        applyStyleBoth(); saveRecent(text, val);
+        applyStyleAll(); saveRecent(inp, val);
       });
     });
     form.querySelectorAll('[data-clear-color]').forEach(btn => {
       btn.addEventListener("click", (e) => {
         const key = e.currentTarget.dataset.clearColor;
-        const text = key === "textColor" ? textInp : bgInp;
-        if (text) text.value = "";
-        applyStyleBoth();
+        const inp = key === "textColor" ? textInp : bgInp;
+        if (inp) inp.value = ""; applyStyleAll();
       });
     });
     form.querySelectorAll('[data-pick-current]').forEach(btn => {
       btn.addEventListener("click", (e) => {
         const key = e.currentTarget.dataset.pickCurrent;
-        const text = key === "textColor" ? textInp : bgInp;
-        const prop = key === "textColor" ? "color" : "backgroundColor";
-        const source = cardD || cardM;
+        const prop= key === "textColor" ? "color" : "backgroundColor";
+        const source = cardD || cardM || cardF;
         const val = source ? rgbToHex(getComputedStyle(source)[prop]) : "";
-        if (text && val) text.value = val;
-        const pick = key === "textColor" ? textPick : bgPick;
+        const inp = key === "textColor" ? textInp : bgInp;
+        const pick= key === "textColor" ? textPick : bgPick;
+        if (inp && val) inp.value = val;
         if (pick) pick.value = val;
-        applyStyleBoth(); saveRecent(text, val);
+        applyStyleAll(); saveRecent(inp, val);
       });
     });
 
     [title, author].forEach(el => el && el.addEventListener("input", updateMeta));
     body && body.addEventListener("input", updateBody);
-    fontSel && fontSel.addEventListener("change", applyStyleBoth);
+    fontSel && fontSel.addEventListener("change", applyStyleAll);
     bindPair(textInp, textPick);
-    bindPair(bgInp, bgPick);
+    bindPair(bgInp,   bgPick);
 
     // 初期表示
-    updateMeta(); updateBody(); applyStyleBoth(); renderRecent();
+    updateMeta(); updateBody(); applyStyleAll(); renderRecent();
+
+    // ★ デスクトップ：右プレビューが視界から消えたら FAB を表示
+    if ('IntersectionObserver' in window && cardD && fabWrap){
+      const io = new IntersectionObserver((entries) => {
+        entries.forEach(e => {
+          if (e.isIntersecting){
+            fabWrap.classList.add('opacity-0','pointer-events-none');
+            fabWrap.classList.remove('opacity-100');
+          }else{
+            fabWrap.classList.remove('opacity-0','pointer-events-none');
+            fabWrap.classList.add('opacity-100');
+          }
+        });
+      }, { root: null, threshold: 0.2 });
+      io.observe(cardD);
+    }
 
     // モバイル：展開/収納
     const toggleBtn = document.getElementById('toggle-mobile-preview');
@@ -455,7 +458,7 @@
     }
   }
 
-  // Turbo でも通常遷移でも確実に初期化
+  // Turbo 対応
   document.addEventListener("turbo:load",   setupPreview);
   document.addEventListener("turbo:render", setupPreview);
   if (document.readyState !== "loading") setupPreview();

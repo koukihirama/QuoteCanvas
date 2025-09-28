@@ -1,87 +1,122 @@
-<%# 背景はレイアウトで一度だけ描画。ここで上書き指定 %>
+<%# =========================
+    背景（トップと統一／少しだけきらびやか）
+    ========================= %>
 <% content_for :bg do %>
   <%= render "shared/bg_sky",
-      class: "theme-twilight",   # ← お好みで theme-dawn / theme-midnight など
-      show_hills: true,          # ← 丘を出す
-      aurora_alpha: 0.28,        # 発光の強さ（0.18〜0.32くらいで調整）
-      vignette_alpha: 0.16,      # 周辺減光
-      grain_opacity: 0.5 %>      # 粒子
+      class: "theme-twilight",
+      show_hills: true,
+      aurora_alpha: 0.30,
+      vignette_alpha: 0.16,
+      grain_opacity: 0.5 %>
 <% end %>
 
-<div class="container mx-auto max-w-7xl px-4 md:px-8 relative z-10">
-  <!-- Hero：やわらかい歓迎とクイックアクション -->
+<div class="container mx-auto max-w-7xl px-4 md:px-8 relative z-10 w-full overflow-x-hidden">
+  <!-- ========== Hero：物語の扉（光ときらめき） ========== -->
   <section class="mt-2 md:mt-4" aria-labelledby="hero-title">
-    <div class="rounded-3xl gh-glass p-6 md:p-8 relative overflow-hidden isolate hover-float">
-      <!-- 光のにじみ（isolateでカード内に閉じ込め） -->
-      <div class="pointer-events-none absolute -top-24 -right-24 size-80 rounded-full
-                  bg-gradient-to-tr from-amber-200/40 to-rose-200/40 blur-3xl"></div>
+    <div class="rounded-3xl gh-glass p-5 sm:p-6 md:p-8 relative overflow-hidden isolate hover-float">
+      <!-- やわらかな光のオーブ -->
+      <div aria-hidden="true" class="qc-orb qc-orb-1"></div>
+      <div aria-hidden="true" class="qc-orb qc-orb-2"></div>
+      <!-- ほのかなホタル -->
+      <div aria-hidden="true" class="qc-fireflies">
+        <% 10.times do %><span></span><% end %>
+      </div>
 
-      <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 relative">
-        <div>
-          <h1 id="hero-title" class="text-2xl md:text-3xl font-extrabold gh-underline gh-sparkle">
-            こんにちは、<%= current_user.name.presence || "読者" %> さん
+      <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 relative min-w-0">
+        <div class="min-w-0">
+          <h1 id="hero-title" class="text-2xl md:text-3xl font-extrabold gh-underline gh-sparkle truncate">
+            こんにちは、<%= (current_user.name.presence || "読者") %> さん
           </h1>
-          <p class="mt-2 opacity-80">
-            風のようにすっと書き留めて、森の本棚にそっと並べよう。
+          <p class="mt-2 opacity-80 text-sm sm:text-base">
+            心に刺さった一節を、色とフォントで“小さな作品”にして並べよう。
           </p>
+
+          <!-- バッジ的ミニ統計 -->
+          <div class="mt-3 flex flex-wrap items-center gap-2">
+            <span class="badge badge-primary">
+              カード <span class="ml-1" data-countup="<%= @passages_count.to_i %>"><%= @passages_count %></span>
+            </span>
+            <% if defined?(@streak) && @streak.to_i > 0 %>
+              <span class="badge badge-ghost">連続 <%= @streak %> 日</span>
+            <% end %>
+            <span class="badge badge-ghost">広告なし</span>
+            <span class="badge badge-ghost">プライバシー重視</span>
+          </div>
         </div>
+
+        <!-- クイックアクション -->
         <div class="flex flex-wrap gap-2 shrink-0">
-          <%= link_to new_passage_path, class: "btn btn-primary breeze" do %>
+          <%= link_to new_passage_path, class: "btn btn-primary breeze", data: { confetti: true } do %>
             ＋ 一節を記録
           <% end %>
-
           <%= link_to passages_path, class: "btn btn-outline hover-float" do %>
             一覧を見る
           <% end %>
-
           <%= link_to "プロフィール", profile_path, class: "btn btn-ghost hover-float" %>
-          <%= link_to "アカウント設定", edit_user_registration_path, class: "btn btn-outline hover-float" %>
+          <%= link_to "設定", edit_user_registration_path, class: "btn btn-outline hover-float" %>
+        </div>
+      </div>
+
+      <!-- 小さな“下書きカード”ティザー（クリックで作成へ） -->
+      <div class="mt-5 rounded-2xl border overflow-hidden gh-surface p-4 sm:p-5 hover-float cursor-pointer"
+           onclick="window.location.href='<%= new_passage_path %>'" role="button" aria-label="一節を下書きする">
+        <div class="mb-1 font-sans text-[11px] opacity-70">作者・書名（任意）</div>
+        <div class="font-serif font-semibold leading-snug clamp-2"
+             style="font-family: var(--font-serif);">
+          「いま心に残っている一文を、ここからふっと書き留めてみましょう。」
+        </div>
+        <div class="mt-3 text-right">
+          <span class="link link-primary">この下書きから作成 →</span>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- サマリ：小さな“本のカード” -->
-  <section class="mt-6 grid gap-4 sm:grid-cols-3" aria-label="サマリー">
-    <div class="rounded-2xl gh-glass p-5 relative hover-float">
+  <!-- ========== サマリ：触って気持ちいい小カード ========== -->
+  <section class="mt-6 grid gap-3 sm:gap-4 sm:grid-cols-3" aria-label="サマリー">
+    <div class="rounded-2xl gh-glass p-5 relative hover-float min-w-0">
       <div class="text-sm opacity-70">あなたのカード</div>
-      <div class="text-3xl font-extrabold mt-1" aria-live="polite"><%= @passages_count %></div>
+      <div class="text-3xl font-extrabold mt-1" aria-live="polite" data-countup="<%= @passages_count.to_i %>"><%= @passages_count %></div>
     </div>
-    <a href="<%= root_path %>#features" class="rounded-2xl gh-glass p-5 hover-float">
-      <div class="text-sm opacity-70">カスタマイズ</div>
-      <div class="mt-1">色・フォントで“言葉の表情”を変える</div>
+
+    <a href="<%= root_path %>#gallery" class="rounded-2xl gh-glass p-5 hover-float min-w-0">
+      <div class="text-sm opacity-70">ギャラリー</div>
+      <div class="mt-1 truncate">“言葉の表情”を眺める</div>
     </a>
-    <%= link_to edit_user_registration_path, class: "rounded-2xl gh-glass p-5 hover-float" do %>
+
+    <%= link_to edit_user_registration_path, class: "rounded-2xl gh-glass p-5 hover-float min-w-0" do %>
       <div class="text-sm opacity-70">プロフィール</div>
       <div class="mt-1 truncate"><%= current_user.email %></div>
     <% end %>
   </section>
 
-  <!-- 最近の一節 -->
-  <section class="mt-10" aria-labelledby="recent-title">
-    <div class="flex items-end justify-between">
-      <div>
+  <!-- ========== 最近の一節：等高＆崩れにくい ========== -->
+  <section class="mt-8 sm:mt-10" aria-labelledby="recent-title">
+    <div class="flex items-end justify-between gap-3 min-w-0">
+      <div class="min-w-0">
         <h2 id="recent-title" class="text-xl md:text-2xl font-bold gh-underline">最近の記録</h2>
-        <p class="opacity-70 text-sm mt-1">直近3枚のカードをピックアップ</p>
+        <p class="opacity-70 text-sm mt-1">直近のカードをピックアップ</p>
       </div>
-      <%= link_to passages_path, class: "link link-primary" do %>
+      <%= link_to passages_path, class: "link link-primary shrink-0" do %>
         すべて見る →
       <% end %>
     </div>
 
-    <% if @recent_passages.any? %>
-      <div class="mt-5 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+    <% if @recent_passages&.any? %>
+      <div class="mt-5 grid gap-4 sm:gap-5 sm:grid-cols-2 lg:grid-cols-3 auto-rows-fr">
         <% @recent_passages.each do |p| %>
-          <%= render "passages/card", passage: p, size: :mini %>
+          <div class="min-h-0">
+            <%= render "passages/card", passage: p, size: :mini %>
+          </div>
         <% end %>
       </div>
     <% else %>
-      <div class="mt-6 rounded-3xl gh-glass p-10 text-center hover-float">
+      <div class="mt-6 rounded-3xl gh-glass p-8 sm:p-10 text-center hover-float">
         <div class="text-4xl mb-2">🌿</div>
         <p class="font-semibold">まだカードがありません</p>
         <p class="opacity-70 text-sm mt-1">心に残った一文を、最初の1枚に。</p>
         <div class="mt-4">
-          <%= link_to new_passage_path, class: "btn btn-primary breeze" do %>
+          <%= link_to new_passage_path, class: "btn btn-primary breeze", data: { confetti: true } do %>
             ＋ 一節を記録
           <% end %>
         </div>
@@ -89,22 +124,140 @@
     <% end %>
   </section>
 
-  <!-- 使い方の3ポイント -->
-  <section class="mt-10 grid gap-4 md:grid-cols-3" aria-label="使い方">
-    <div class="rounded-2xl gh-glass p-6 hover-float">
+  <!-- ========== 使い方の3ポイント：モバイル→縦積み / SM→3列 ========== -->
+  <section class="mt-8 sm:mt-10 grid gap-3 sm:gap-4 md:grid-cols-3" aria-label="使い方">
+    <div class="rounded-2xl gh-glass p-5 sm:p-6 hover-float">
       <div class="text-2xl">✍️</div>
       <div class="font-bold mt-2">書き留める</div>
       <p class="opacity-75 text-sm mt-1">本文・著者・タイトルをサッと入力</p>
     </div>
-    <div class="rounded-2xl gh-glass p-6 hover-float">
+    <div class="rounded-2xl gh-glass p-5 sm:p-6 hover-float">
       <div class="text-2xl">🎨</div>
       <div class="font-bold mt-2">彩る</div>
-      <p class="opacity-75 text-sm mt-1">背景・文字色・フォントで個性を</p>
+      <p class="opacity-75 text-sm mt-1">配色プリセット＆フォントで小さな作品に</p>
     </div>
-    <div class="rounded-2xl gh-glass p-6 hover-float">
+    <div class="rounded-2xl gh-glass p-5 sm:p-6 hover-float">
       <div class="text-2xl">🗂️</div>
       <div class="font-bold mt-2">並べる</div>
       <p class="opacity-75 text-sm mt-1">あとで眺めて、また好きになる</p>
     </div>
   </section>
+
+  <!-- ========== モバイル下部ドック（片手で素早く） ========== -->
+  <nav class="md:hidden fixed inset-x-0 bottom-0 z-40">
+    <div class="mx-auto max-w-7xl px-4 pb-[calc(env(safe-area-inset-bottom)+8px)]">
+      <div class="rounded-2xl gh-glass p-2 flex items-center justify-around backdrop-blur">
+        <%= link_to new_passage_path, class: "btn btn-primary btn-sm", data: { confetti: true } do %>＋ 保存<% end %>
+        <%= link_to passages_path, class: "btn btn-ghost btn-sm" do %>一覧<% end %>
+        <%= link_to profile_path, class: "btn btn-ghost btn-sm" do %>プロフィール<% end %>
+        <%= link_to edit_user_registration_path, class: "btn btn-ghost btn-sm" do %>設定<% end %>
+      </div>
+    </div>
+  </nav>
 </div>
+
+<%# =========================
+    ページ専用スタイル（CSP nonce）
+    ========================= %>
+<style nonce="<%= content_security_policy_nonce %>">
+  /* 光のオーブ（淡く漂う） */
+  .qc-orb{position:absolute; border-radius:9999px; filter:blur(28px); opacity:.55; mix-blend-mode:screen; pointer-events:none;}
+  .qc-orb-1{top:-5rem; right:-5rem; width:22rem; height:22rem;
+    background: radial-gradient(45% 45% at 50% 50%, rgba(253,242,248,.65), transparent 60%);}
+  .qc-orb-2{bottom:-6rem; left:-6rem; width:18rem; height:18rem;
+    background: radial-gradient(45% 45% at 50% 50%, rgba(219,234,254,.6), transparent 60%);}
+  @media (min-width:768px){
+    .qc-orb-1{width:26rem;height:26rem;}
+    .qc-orb-2{width:22rem;height:22rem;}
+  }
+
+  /* ほのかなホタル */
+  .qc-fireflies{position:absolute; inset:0; overflow:hidden; pointer-events:none;}
+  .qc-fireflies span{position:absolute; width:6px; height:6px; border-radius:9999px;
+    background: radial-gradient(circle, rgba(255,255,255,.9) 0 40%, transparent 70%);
+    filter: blur(.5px); opacity:.7; animation: fly 7s linear infinite;}
+  .qc-fireflies span:nth-child(odd){width:5px;height:5px; animation-duration:8.5s; opacity:.6;}
+  @keyframes fly{
+    0%{ transform: translate(var(--sx, 10%), var(--sy, 10%)) scale(.8);}
+    50%{ transform: translate(calc(var(--sx, 10%) + 30%), calc(var(--sy, 10%) - 10%)) scale(1);}
+    100%{ transform: translate(var(--sx, 10%), var(--sy, 10%)) scale(.8);}
+  }
+  /* ランダムっぽい配置 */
+  .qc-fireflies span:nth-child(1){--sx:10%; --sy:30%;}
+  .qc-fireflies span:nth-child(2){--sx:28%; --sy:18%;}
+  .qc-fireflies span:nth-child(3){--sx:55%; --sy:24%;}
+  .qc-fireflies span:nth-child(4){--sx:72%; --sy:12%;}
+  .qc-fireflies span:nth-child(5){--sx:84%; --sy:36%;}
+  .qc-fireflies span:nth-child(6){--sx:14%; --sy:62%;}
+  .qc-fireflies span:nth-child(7){--sx:38%; --sy:70%;}
+  .qc-fireflies span:nth-child(8){--sx:66%; --sy:64%;}
+  .qc-fireflies span:nth-child(9){--sx:82%; --sy:58%;}
+  .qc-fireflies span:nth-child(10){--sx:50%; --sy:78%;}
+</style>
+
+<%# =========================
+    最小JS（CSP nonce付き）
+    - CountUp：数字に手応え
+    - Confetti：作成ボタンに小さな祝福
+    ========================= %>
+<script nonce="<%= content_security_policy_nonce %>">
+  (function () {
+    // ---- CountUp（トップ同等の軽量版）
+    var els = document.querySelectorAll('[data-countup]');
+    if ('IntersectionObserver' in window && els.length) {
+      var once = new WeakSet();
+      var io = new IntersectionObserver(function(entries){
+        entries.forEach(function(e){
+          if (!e.isIntersecting || once.has(e.target)) return;
+          once.add(e.target);
+          var el = e.target, end = parseInt(el.dataset.countup, 10) || 0;
+          var start = 0, dur = 900, t0 = performance.now();
+          function tick(t){
+            var p = Math.min(1, (t - t0) / dur);
+            el.textContent = Math.floor(start + (end - start) * p);
+            if (p < 1) requestAnimationFrame(tick);
+          }
+          requestAnimationFrame(tick);
+        });
+      }, {threshold: .3});
+      els.forEach(function(el){ io.observe(el); });
+    }
+
+    // ---- Confetti（依存なし／小さな紙吹雪）
+    function popConfetti(x, y){
+      var n = 18, container = document.createElement('div');
+      container.style.cssText = "position:fixed;left:0;top:0;width:100vw;height:100vh;pointer-events:none;z-index:60;overflow:hidden";
+      for (var i=0;i<n;i++){
+        var s = document.createElement('span');
+        var size = 6 + Math.random()*6;
+        var angle = Math.random()*360;
+        var dist = 80 + Math.random()*120;
+        var tx = Math.cos(angle*Math.PI/180) * dist;
+        var ty = Math.sin(angle*Math.PI/180) * dist;
+        s.style.cssText =
+          "position:absolute;left:"+x+"px;top:"+y+"px;width:"+size+"px;height:"+size+"px;border-radius:2px;"+
+          "background:hsl("+(Math.random()*360|0)+",90%,60%);"+
+          "transform:translate(-50%,-50%);opacity:.95;"+
+          "transition: transform .9s cubic-bezier(.22,1,.36,1), opacity .9s ease";
+        container.appendChild(s);
+        requestAnimationFrame((function(el,tx,ty){
+          return function(){
+            el.style.transform = "translate(calc(-50% + "+tx+"px), calc(-50% + "+ty+"px)) rotate("+ (Math.random()*540|0) +"deg)";
+            el.style.opacity = .0;
+          };
+        })(s,tx,ty));
+      }
+      document.body.appendChild(container);
+      setTimeout(function(){ container.remove(); }, 1000);
+    }
+
+    // ボタンに confetti を付与
+    document.querySelectorAll('[data-confetti]').forEach(function(btn){
+      btn.addEventListener('click', function(e){
+        var r = btn.getBoundingClientRect();
+        var x = r.left + r.width/2, y = r.top + r.height/2;
+        popConfetti(x, y);
+      }, {passive:true});
+    });
+  })();
+</script>
